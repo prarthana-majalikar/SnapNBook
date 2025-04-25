@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../shared/widgets/primary_button.dart';
 import '../../state/booking_provider.dart';
 
@@ -35,8 +36,18 @@ class HomeScreen extends ConsumerWidget {
             // Scan Button
             PrimaryButton(
               label: '📸 Scan Appliance',
-              onPressed: () {
-                // TODO: Open camera or upload
+              onPressed: () async {
+                final ImagePicker picker = ImagePicker();
+                final XFile? image = await picker.pickImage(
+                  source: ImageSource.camera,
+                );
+                if (image != null) {
+                  // You now have the image file!
+                  print('Captured image path: ${image.path}');
+                  // TODO: Send to backend AI model or preview in a new screen
+                } else {
+                  print('Camera canceled');
+                }
               },
             ),
             const SizedBox(height: 24),

@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>This app uses the camera to let you scan appliances for repair.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs photo library access for uploading images.</string>
 </dict>
 </plist>
