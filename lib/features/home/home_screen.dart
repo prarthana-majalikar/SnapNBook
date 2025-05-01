@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../shared/widgets/primary_button.dart';
 import '../../state/booking_provider.dart';
+import '../../services/image_detection_service.dart';
+import '../../features/booking/appliance_selection_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -37,16 +40,45 @@ class HomeScreen extends ConsumerWidget {
             PrimaryButton(
               label: '📸 Scan Appliance',
               onPressed: () async {
-                final ImagePicker picker = ImagePicker();
-                final XFile? image = await picker.pickImage(
-                  source: ImageSource.camera,
+                final picker = ImagePicker();
+                final pickedFile = await picker.pickImage(
+                  source: ImageSource.gallery,
                 );
-                if (image != null) {
-                  // You now have the image file!
-                  print('Captured image path: ${image.path}');
-                  // TODO: Send to backend AI model or preview in a new screen
-                } else {
-                  print('Camera canceled');
+
+                if (pickedFile == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('No image selected')),
+                  );
+                  return;
+                }
+
+                try {
+                  final objectName = await detectFirstObjectFromImage(
+                    File(pickedFile.path),
+                  );
+
+                  if (context.mounted) {
+                    if (objectName != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (_) => ApplianceSelectionScreen(
+                                detectedObject: objectName,
+                              ),
+                        ),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('No object detected')),
+                      );
+                    }
+                  }
+                } catch (e) {
+                  print('Error: $e');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Failed to detect object')),
+                  );
                 }
               },
             ),
