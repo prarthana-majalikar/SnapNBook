@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:snapnbook/config.dart';
 
 Future<String?> detectFirstObjectFromImage(File imageFile) async {
-  final uri = Uri.parse(
-    'http://yololoadbalancer-1521513358.us-east-1.elb.amazonaws.com/detect/',
-  );
+  final uri = Uri.parse(AppConfig.objectDetectionUrl);
 
   var request = http.MultipartRequest('POST', uri)
     ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
