@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'booking_screen.dart';
 import '../../../state/booking_provider.dart';
+import 'package:go_router/go_router.dart';
 
 class ApplianceSelectionScreen extends ConsumerWidget {
   final String detectedObject;
@@ -26,10 +27,7 @@ class ApplianceSelectionScreen extends ConsumerWidget {
             ElevatedButton(
               onPressed: () {
                 ref.read(bookingProvider).setApplianceType(detectedObject);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => BookingScreen()),
-                );
+                context.push('/booking');
               },
               child: const Text('Continue with this appliance'),
             ),

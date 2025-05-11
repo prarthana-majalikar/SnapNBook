@@ -6,6 +6,7 @@ import '../../shared/widgets/primary_button.dart';
 import '../../state/booking_provider.dart';
 import '../../services/image_detection_service.dart';
 import '../../features/booking/appliance_selection_screen.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -67,14 +68,11 @@ class HomeScreen extends ConsumerWidget {
 
                   if (context.mounted) {
                     if (objectName != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (_) => ApplianceSelectionScreen(
-                                detectedObject: objectName,
-                              ),
-                        ),
+                      print(
+                        "Pushing to: /appliance-selection/${Uri.encodeComponent(objectName.replaceAll(" ", ""))}",
+                      );
+                      context.push(
+                        '/appliance-selection/${Uri.encodeComponent(objectName)}',
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(

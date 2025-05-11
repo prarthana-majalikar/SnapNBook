@@ -48,11 +48,7 @@ class ConfirmationPage extends ConsumerWidget {
             const SizedBox(height: 30),
             ElevatedButton.icon(
               onPressed: () {
-                // For go_router users:
                 context.go('/');
-
-                // For Navigator:
-                Navigator.popUntil(context, (route) => route.isFirst);
               },
               icon: const Icon(Icons.home),
               label: const Text("Back to Home"),

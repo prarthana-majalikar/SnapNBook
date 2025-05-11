@@ -5,6 +5,7 @@ import '../../shared/widgets/primary_button.dart';
 import 'confirmation_page.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:go_router/go_router.dart';
 
 class ConfirmBookingSheet extends ConsumerStatefulWidget {
   @override
@@ -59,24 +60,6 @@ class _ConfirmBookingSheetState extends ConsumerState<ConfirmBookingSheet> {
           const SizedBox(height: 20),
           PrimaryButton(
             label: 'Confirm Booking',
-            // onPressed: () {
-            //   final address = addressController.text.trim();
-            //   if (address.isEmpty) {
-            //     ScaffoldMessenger.of(context).showSnackBar(
-            //       const SnackBar(content: Text('Please enter your address')),
-            //     );
-            //     return;
-            //   }
-
-            //   Navigator.of(context).pop();
-            //   ScaffoldMessenger.of(context).showSnackBar(
-            //     SnackBar(
-            //       content: Text(
-            //         'Booking Confirmed for $appliance on ${selectedDate?.toLocal().toString().split(' ')[0]} at $selectedTime',
-            //       ),
-            //     ),
-            //   );
-            // },
             onPressed: () async {
               print('[DEBUG] Confirm Booking button pressed');
               try {
@@ -118,12 +101,10 @@ class _ConfirmBookingSheetState extends ConsumerState<ConfirmBookingSheet> {
 
                 // 2. Construct request body
                 final bookingBody = {
-                  "userId": "u555", // Dummy user
+                  "userId": "b@gmail.com", // Dummy user
                   "appliance": appliance,
                   "issue": "Scratches", // Dummy issue for now
-                  "address": address,
                   "preferredTime": isoTime,
-                  "location": {"lat": 37.7749, "lon": -122.4194},
                 };
 
                 // 3. Make API call
@@ -140,18 +121,8 @@ class _ConfirmBookingSheetState extends ConsumerState<ConfirmBookingSheet> {
                 );
 
                 if (response.statusCode == 200 || response.statusCode == 201) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (_) => ConfirmationPage(
-                            appliance: appliance,
-                            selectedDate:
-                                date.toLocal().toString().split(' ')[0],
-                            selectedTime: time,
-                          ),
-                    ),
-                  );
+                  if (!mounted) return;
+                  context.push('/confirmation');
                   print(
                     '[DEBUG] Booking API responded with status: ${response.statusCode}',
                   );
