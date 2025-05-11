@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'booking_screen.dart';
+import '../../../state/booking_provider.dart';
 
-class ApplianceSelectionScreen extends StatelessWidget {
+class ApplianceSelectionScreen extends ConsumerWidget {
   final String detectedObject;
 
   const ApplianceSelectionScreen({super.key, required this.detectedObject});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(title: const Text('Detected Appliance')),
       body: Center(
@@ -22,7 +25,11 @@ class ApplianceSelectionScreen extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // TODO: Move to booking screen with detectedObject
+                ref.read(bookingProvider).setApplianceType(detectedObject);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => BookingScreen()),
+                );
               },
               child: const Text('Continue with this appliance'),
             ),

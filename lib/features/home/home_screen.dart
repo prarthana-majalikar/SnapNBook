@@ -12,7 +12,11 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bookings = ref.watch(bookingProvider);
+    // final bookingProvider = Provider.of<BookingProvider>(
+    //   context,
+    //   listen: false,
+    // );
+    // final bookings = ref.watch(bookingProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -42,7 +46,10 @@ class HomeScreen extends ConsumerWidget {
               onPressed: () async {
                 final picker = ImagePicker();
                 final pickedFile = await picker.pickImage(
-                  source: ImageSource.gallery,
+                  source:
+                      Platform.isAndroid
+                          ? ImageSource.camera
+                          : ImageSource.gallery,
                 );
 
                 if (pickedFile == null) {
@@ -106,61 +113,61 @@ class HomeScreen extends ConsumerWidget {
             const SizedBox(height: 24),
 
             // Booking Section
-            const Text(
-              'Your Bookings',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
+            // const Text(
+            //   'Your Bookings',
+            //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            // ),
+            // const SizedBox(height: 12),
 
-            bookings.isEmpty
-                ? Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey[300]!),
-                  ),
-                  child: Center(
-                    child: Column(
-                      children: [
-                        Icon(Icons.inbox, size: 48, color: Colors.grey[500]),
-                        const SizedBox(height: 12),
-                        const Text(
-                          'No bookings yet!',
-                          style: TextStyle(fontSize: 16, color: Colors.black54),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Start by scanning an appliance or selecting a service.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 14, color: Colors.black38),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-                : Column(
-                  children:
-                      bookings.map((booking) {
-                        return ListTile(
-                          leading: Icon(
-                            booking.status == 'Completed'
-                                ? Icons.history
-                                : Icons.build_circle,
-                            color:
-                                booking.status == 'Completed'
-                                    ? Colors.grey
-                                    : Colors.deepPurple,
-                          ),
-                          title: Text('${booking.service} - ${booking.status}'),
-                          subtitle: Text(booking.subtitle),
-                          trailing: Icon(Icons.chevron_right),
-                          onTap: () {
-                            // TODO: Navigate to detail or tracking
-                          },
-                        );
-                      }).toList(),
-                ),
+            // bookings.isEmpty
+            //     ? Container(
+            //       padding: const EdgeInsets.all(24),
+            //       decoration: BoxDecoration(
+            //         color: Colors.grey[100],
+            //         borderRadius: BorderRadius.circular(12),
+            //         border: Border.all(color: Colors.grey[300]!),
+            //       ),
+            //       child: Center(
+            //         child: Column(
+            //           children: [
+            //             Icon(Icons.inbox, size: 48, color: Colors.grey[500]),
+            //             const SizedBox(height: 12),
+            //             const Text(
+            //               'No bookings yet!',
+            //               style: TextStyle(fontSize: 16, color: Colors.black54),
+            //             ),
+            //             const SizedBox(height: 8),
+            //             const Text(
+            //               'Start by scanning an appliance or selecting a service.',
+            //               textAlign: TextAlign.center,
+            //               style: TextStyle(fontSize: 14, color: Colors.black38),
+            //             ),
+            //           ],
+            //         ),
+            //       ),
+            //     )
+            //     : Column(
+            //   children:
+            //       bookings.map((booking) {
+            //         return ListTile(
+            //           leading: Icon(
+            //             booking.status == 'Completed'
+            //                 ? Icons.history
+            //                 : Icons.build_circle,
+            //             color:
+            //                 booking.status == 'Completed'
+            //                     ? Colors.grey
+            //                     : Colors.deepPurple,
+            //           ),
+            //           title: Text('${booking.service} - ${booking.status}'),
+            //           subtitle: Text(booking.subtitle),
+            //           trailing: Icon(Icons.chevron_right),
+            //           onTap: () {
+            //             // TODO: Navigate to detail or tracking
+            //           },
+            //         );
+            //       }).toList(),
+            // ),
           ],
         ),
       ),

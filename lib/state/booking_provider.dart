@@ -1,12 +1,31 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class Booking {
-  final String service;
-  final String status;
-  final String subtitle;
+class BookingProvider extends ChangeNotifier {
+  DateTime? selectedDate;
+  String? selectedTime;
+  String? applianceType;
 
-  Booking(this.service, this.status, this.subtitle);
+  void setApplianceType(String appliance) {
+    applianceType = appliance;
+    notifyListeners();
+  }
+
+  void setDate(DateTime date) {
+    selectedDate = date;
+    notifyListeners();
+  }
+
+  void setTime(String time) {
+    selectedTime = time;
+    notifyListeners();
+  }
+
+  void clearSelection() {
+    selectedDate = null;
+    selectedTime = null;
+    notifyListeners();
+  }
 }
 
-// Simulated backend data
-final bookingProvider = StateProvider<List<Booking>>((ref) => []);
+final bookingProvider = ChangeNotifierProvider((ref) => BookingProvider());
