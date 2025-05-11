@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../state/booking_provider.dart';
 import '../../shared/widgets/primary_button.dart';
-import 'confirmation_page.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:go_router/go_router.dart';
+import '../../../config.dart';
 
 class ConfirmBookingSheet extends ConsumerStatefulWidget {
   @override
@@ -71,19 +71,12 @@ class _ConfirmBookingSheetState extends ConsumerState<ConfirmBookingSheet> {
                         ? "Test address"
                         : addressController.text.trim();
 
-                print('appliance: $appliance');
-                print('date: $date');
-                print('time: $time');
-                print('address: $address');
-
-                if (date == null || time == null || address.isEmpty) {
-                  print('empty fields');
+                if (date == null || time == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Please complete all booking details'),
                     ),
                   );
-                  print('returning...');
                   return;
                 }
 
@@ -108,9 +101,7 @@ class _ConfirmBookingSheetState extends ConsumerState<ConfirmBookingSheet> {
                 };
 
                 // 3. Make API call
-                final url = Uri.parse(
-                  "https://yzs6j2oypb.execute-api.us-east-1.amazonaws.com/development/v1/bookings",
-                );
+                final url = Uri.parse(AppConfig.createBooking);
 
                 print('[DEBUG] Sending booking request to $url');
                 print('[DEBUG] Request body: ${jsonEncode(bookingBody)}');

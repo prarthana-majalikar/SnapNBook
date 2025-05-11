@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../shared/widgets/primary_button.dart';
-import '../../state/booking_provider.dart';
 import '../../services/image_detection_service.dart';
-import '../../features/booking/appliance_selection_screen.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeScreen extends ConsumerWidget {
