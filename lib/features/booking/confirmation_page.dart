@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../state/booking_provider.dart'; // adjust path as needed
+import 'package:go_router/go_router.dart';
 
-class ConfirmationPage extends StatelessWidget {
-  final String appliance;
-  final String selectedDate;
-  final String selectedTime;
-
-  const ConfirmationPage({
-    required this.appliance,
-    required this.selectedDate,
-    required this.selectedTime,
-    Key? key,
-  }) : super(key: key);
+class ConfirmationPage extends ConsumerWidget {
+  const ConfirmationPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final provider = ref.watch(bookingProvider);
+
+    final appliance = provider.applianceType ?? 'N/A';
+    final date =
+        provider.selectedDate?.toLocal().toString().split(' ')[0] ?? 'N/A';
+    final time = provider.selectedTime ?? 'N/A';
+    final address =
+        '123 Main St, City, Country'; // Or fetch from provider if available
+
     return Scaffold(
       appBar: AppBar(title: const Text("Booking Confirmation")),
       body: Padding(
@@ -36,16 +39,20 @@ class ConfirmationPage extends StatelessWidget {
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: [
                 _buildTableRow("Appliance", appliance),
-                _buildTableRow("Date", selectedDate),
-                _buildTableRow("Time", selectedTime),
+                _buildTableRow("Date", date),
+                _buildTableRow("Time", time),
                 _buildTableRow("Price", "\$50"),
-                _buildTableRow("Address", "123 Main St, City, Country"),
+                _buildTableRow("Address", address),
               ],
             ),
             const SizedBox(height: 30),
             ElevatedButton.icon(
               onPressed: () {
-                Navigator.pop(context);
+                // For go_router users:
+                context.go('/');
+
+                // For Navigator:
+                Navigator.popUntil(context, (route) => route.isFirst);
               },
               icon: const Icon(Icons.home),
               label: const Text("Back to Home"),

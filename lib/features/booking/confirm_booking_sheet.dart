@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../state/booking_provider.dart';
 import '../../shared/widgets/primary_button.dart';
 import 'confirmation_page.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ConfirmBookingSheet extends ConsumerStatefulWidget {
   @override
@@ -75,29 +77,117 @@ class _ConfirmBookingSheetState extends ConsumerState<ConfirmBookingSheet> {
             //     ),
             //   );
             // },
-            onPressed: () {
-              final formattedDate =
-                  selectedDate?.toLocal().toString().split(' ')[0] ??
-                  "Not selected";
-              final time = selectedTime ?? "Not selected";
+            onPressed: () async {
+              print('[DEBUG] Confirm Booking button pressed');
+              try {
+                final appliance = provider.applianceType ?? 'Unknown';
+                final date = provider.selectedDate;
+                final time = provider.selectedTime;
+                final address =
+                    addressController.text.trim().isEmpty
+                        ? "Test address"
+                        : addressController.text.trim();
 
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder:
-                      (context) => ConfirmationPage(
-                        appliance: appliance,
-                        selectedDate: formattedDate,
-                        selectedTime: time,
-                      ),
-                ),
-              );
+                print('appliance: $appliance');
+                print('date: $date');
+                print('time: $time');
+                print('address: $address');
+
+                if (date == null || time == null || address.isEmpty) {
+                  print('empty fields');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please complete all booking details'),
+                    ),
+                  );
+                  print('returning...');
+                  return;
+                }
+
+                print('[DEBUG] Preparing booking request...');
+                // 1. Convert date + time to ISO timestamp
+                final DateTime dateTime = DateTime(
+                  date.year,
+                  date.month,
+                  date.day,
+                  _parseHour(time),
+                  _parseMinute(time),
+                );
+
+                final isoTime = dateTime.toUtc().toIso8601String();
+
+                // 2. Construct request body
+                final bookingBody = {
+                  "userId": "u555", // Dummy user
+                  "appliance": appliance,
+                  "issue": "Scratches", // Dummy issue for now
+                  "address": address,
+                  "preferredTime": isoTime,
+                  "location": {"lat": 37.7749, "lon": -122.4194},
+                };
+
+                // 3. Make API call
+                final url = Uri.parse(
+                  "https://yzs6j2oypb.execute-api.us-east-1.amazonaws.com/development/v1/bookings",
+                );
+
+                print('[DEBUG] Sending booking request to $url');
+                print('[DEBUG] Request body: ${jsonEncode(bookingBody)}');
+                final response = await http.post(
+                  url,
+                  headers: {'Content-Type': 'application/json'},
+                  body: jsonEncode(bookingBody),
+                );
+
+                if (response.statusCode == 200 || response.statusCode == 201) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (_) => ConfirmationPage(
+                            appliance: appliance,
+                            selectedDate:
+                                date.toLocal().toString().split(' ')[0],
+                            selectedTime: time,
+                          ),
+                    ),
+                  );
+                  print(
+                    '[DEBUG] Booking API responded with status: ${response.statusCode}',
+                  );
+                  print('[DEBUG] Response body: ${response.body}');
+                } else {
+                  print('Error response: ${response.body}');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Booking failed. Try again.')),
+                  );
+                }
+              } catch (e) {
+                print('API error: $e');
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Something went wrong')),
+                );
+              }
             },
           ),
         ],
       ),
     );
   }
+}
+
+int _parseHour(String timeStr) {
+  final parts = timeStr.split(' ');
+  final time = parts[0].split(':');
+  int hour = int.parse(time[0]);
+  final isPM = parts[1].toUpperCase() == 'PM';
+  if (isPM && hour != 12) hour += 12;
+  if (!isPM && hour == 12) hour = 0;
+  return hour;
+}
+
+int _parseMinute(String timeStr) {
+  return int.parse(timeStr.split(' ')[0].split(':')[1]);
 }
 
 class _InfoRow extends StatelessWidget {

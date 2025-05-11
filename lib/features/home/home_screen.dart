@@ -46,10 +46,11 @@ class HomeScreen extends ConsumerWidget {
               onPressed: () async {
                 final picker = ImagePicker();
                 final pickedFile = await picker.pickImage(
-                  source:
-                      Platform.isAndroid
-                          ? ImageSource.camera
-                          : ImageSource.gallery,
+                  // source:
+                  //     Platform.isAndroid
+                  //         ? ImageSource.camera
+                  //         : ImageSource.gallery,
+                  source: ImageSource.gallery,
                 );
 
                 if (pickedFile == null) {
