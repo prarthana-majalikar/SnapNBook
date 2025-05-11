@@ -1,0 +1,36 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+class MainScaffold extends StatelessWidget {
+  final Widget child;
+
+  const MainScaffold({super.key, required this.child});
+
+  static const tabs = ['/home', '/bookings', '/profile'];
+
+  @override
+  Widget build(BuildContext context) {
+    final location = GoRouterState.of(context).uri.toString();
+
+    int currentIndex = tabs.indexWhere((t) => location.startsWith(t));
+    if (currentIndex == -1) currentIndex = 0;
+
+    return Scaffold(
+      body: child,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: currentIndex,
+        onTap: (index) {
+          context.go(tabs[index]);
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_today),
+            label: 'Bookings',
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+        ],
+      ),
+    );
+  }
+}
