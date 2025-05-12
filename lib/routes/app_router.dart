@@ -9,6 +9,7 @@ import '../features/booking/booking_screen.dart';
 import '../features/booking/confirmation_page.dart';
 import '../shared/layout/main_scaffold.dart';
 import '../features/booking/booking_list_screen.dart';
+import '../features/profile/profile_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -33,6 +34,10 @@ class AppRouter {
           GoRoute(
             path: '/bookings',
             builder: (context, state) => const BookingListScreen(),
+          ),
+          GoRoute(
+            path: '/profile',
+            builder: (context, state) => const ProfileScreen(),
           ),
         ],
       ),
