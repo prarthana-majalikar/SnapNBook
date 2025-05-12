@@ -8,6 +8,7 @@ import '../features/booking/appliance_selection_screen.dart';
 import '../features/booking/booking_screen.dart';
 import '../features/booking/confirmation_page.dart';
 import '../shared/layout/main_scaffold.dart';
+import '../features/booking/booking_list_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -27,7 +28,13 @@ class AppRouter {
           return MainScaffold(child: child); // <-- contains bottom nav bar
         },
         // Routes that need to display the bottom nav bar should be added here
-        routes: [GoRoute(path: '/', builder: (context, state) => HomeScreen())],
+        routes: [
+          GoRoute(path: '/', builder: (context, state) => HomeScreen()),
+          GoRoute(
+            path: '/bookings',
+            builder: (context, state) => const BookingListScreen(),
+          ),
+        ],
       ),
 
       // Routes that don't need the bottom nav bar should be added here
