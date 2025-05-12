@@ -49,14 +49,7 @@ class _ConfirmBookingSheetState extends ConsumerState<ConfirmBookingSheet> {
           _InfoRow(label: "Appliance", value: appliance),
           _InfoRow(label: "Address", value: "123 Main St, City, Country"),
           _InfoRow(label: "Price", value: "\$50"),
-          // const SizedBox(height: 15),
-          // TextField(
-          //   controller: addressController,
-          //   decoration: const InputDecoration(
-          //     labelText: "Address",
-          //     border: OutlineInputBorder(),
-          //   ),
-          // ),
+
           const SizedBox(height: 20),
           PrimaryButton(
             label: 'Confirm Booking',
