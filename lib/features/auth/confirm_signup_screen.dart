@@ -1,0 +1,79 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../services/auth_service.dart';
+
+class ConfirmSignupScreen extends StatefulWidget {
+  const ConfirmSignupScreen({super.key});
+
+  @override
+  State<ConfirmSignupScreen> createState() => _ConfirmSignupScreenState();
+}
+
+class _ConfirmSignupScreenState extends State<ConfirmSignupScreen> {
+  late final TextEditingController _emailController;
+  final TextEditingController _codeController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController();
+  }
+
+  void _confirmSignup() async {
+    final email = _emailController.text.trim();
+    final code = _codeController.text.trim();
+
+    final success = await AuthService.confirmSignup(email, code);
+
+    if (!mounted) return;
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Verification successful. You can now login.'),
+        ),
+      );
+      context.go('/login');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Verification failed. Please try again.')),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Confirm Signup'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/signup'), // ✅ go to signup explicitly
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(labelText: 'Email'),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _codeController,
+              decoration: const InputDecoration(labelText: 'Verification Code'),
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _confirmSignup,
+              child: const Text('Verify'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

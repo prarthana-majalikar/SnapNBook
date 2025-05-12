@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../state/auth_provider.dart';
 import '../../shared/widgets/custom_input.dart';
 import '../../shared/widgets/primary_button.dart';
+import '../../services/auth_service.dart';
 
 class LoginScreen extends ConsumerWidget {
   final _emailController = TextEditingController();
@@ -29,9 +30,23 @@ class LoginScreen extends ConsumerWidget {
             const SizedBox(height: 24),
             PrimaryButton(
               label: 'Login',
-              onPressed: () {
-                ref.read(authProvider.notifier).state = true;
-                context.go('/');
+              onPressed: () async {
+                final email = _emailController.text.trim();
+                final password = _passwordController.text.trim();
+
+                final success = await AuthService.login(
+                  email,
+                  password,
+                ); // check AWS
+
+                if (success) {
+                  ref.read(authProvider.notifier).state = true;
+                  context.go('/'); // ✅ only go to home if success
+                } else {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(const SnackBar(content: Text('Login failed')));
+                }
               },
             ),
             TextButton(

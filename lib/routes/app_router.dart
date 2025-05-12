@@ -16,11 +16,12 @@ class AppRouter {
     redirect: (context, state) {
       final container = ProviderScope.containerOf(context);
       final isLoggedIn = container.read(authProvider);
-      final isLoggingIn =
-          state.fullPath == '/login' || state.fullPath == '/signup';
+      final path = state.uri.path;
+      final isPublicPage =
+          path == '/login' || path == '/signup' || path.startsWith('/confirm');
 
-      if (!isLoggedIn && !isLoggingIn) return '/login';
-      if (isLoggedIn && isLoggingIn) return '/';
+      if (!isLoggedIn && !isPublicPage) return '/login';
+      if (isLoggedIn && path == '/login') return '/';
       return null;
     },
     routes: [
