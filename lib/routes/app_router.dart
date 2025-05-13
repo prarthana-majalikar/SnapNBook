@@ -7,7 +7,7 @@ import '../state/auth_provider.dart';
 import '../features/user/booking/appliance_selection_screen.dart';
 import '../features/user/booking/booking_screen.dart';
 import '../features/user/booking/confirmation_page.dart';
-import '../shared/layout/main_scaffold.dart';
+import '../shared/layout/user_scaffold.dart';
 import '../features/user/booking/booking_list_screen.dart';
 import '../features/user/profile/profile_screen.dart';
 import '../features/technician/home/home_screen.dart';
@@ -35,7 +35,7 @@ class AppRouter {
     routes: [
       ShellRoute(
         builder: (context, state, child) {
-          return MainScaffold(child: child); // <-- contains bottom nav bar
+          return UserScaffold(child: child); // <-- contains bottom nav bar
         },
         // Routes that need to display the bottom nav bar should be added here
         routes: [

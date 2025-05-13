@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-class MainScaffold extends StatelessWidget {
+class UserScaffold extends StatelessWidget {
   final Widget child;
 
-  const MainScaffold({super.key, required this.child});
+  const UserScaffold({super.key, required this.child});
 
   static const tabs = ['/', '/bookings', '/profile'];
 

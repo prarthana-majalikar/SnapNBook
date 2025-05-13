@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart'; // For formatting datetime
+import 'package:go_router/go_router.dart';
+import "../../../providers/jobs_provider.dart";
 
 class TechnicianHomeScreen extends ConsumerWidget {
   const TechnicianHomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // In the future, fetch technician's name from provider or token
     final technicianName = 'Technician';
+    final jobAsync = ref.watch(jobsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -21,55 +24,84 @@ class TechnicianHomeScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Welcome, $technicianName 👋',
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 20),
+      body: jobAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, _) => Center(child: Text('Error: $err')),
+        data: (jobs) {
+          final today = DateTime.now().toUtc();
+          final activeTodayJobs =
+              jobs.where((job) {
+                final preferredTime = DateTime.tryParse(
+                  job['preferredTime'] ?? '',
+                );
+                if (preferredTime == null) return false;
+                return preferredTime.toUtc().day == today.day &&
+                    preferredTime.toUtc().month == today.month &&
+                    preferredTime.toUtc().year == today.year &&
+                    (job['status'] == 'Assigned' ||
+                        job['status'] == 'In Progress');
+              }).toList();
 
-            // Section for active jobs
-            const Text(
-              'Your Active Jobs',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 10),
-            _buildJobCard(
-              title: 'Repair - Washing Machine',
-              status: 'Assigned',
-              scheduledTime: 'May 12, 10:00 AM',
-            ),
-            _buildJobCard(
-              title: 'Service - Microwave',
-              status: 'In Progress',
-              scheduledTime: 'May 13, 3:00 PM',
-            ),
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Welcome, $technicianName 👋',
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 20),
 
-            const SizedBox(height: 30),
-            ElevatedButton.icon(
-              onPressed: () {
-                // TODO: Navigate to all jobs list
-              },
-              icon: const Icon(Icons.assignment),
-              label: const Text('View All Jobs'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size.fromHeight(45),
-              ),
+                const Text(
+                  'Your Active Jobs',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 10),
+
+                if (activeTodayJobs.isEmpty)
+                  const Text('No active jobs for today.'),
+                for (var job in activeTodayJobs)
+                  _buildJobCard(
+                    context: context,
+                    title: '${job['type']} - ${job['appliance']}',
+                    status: job['status'],
+                    scheduledTime: DateFormat(
+                      'MMM dd, hh:mm a',
+                    ).format(DateTime.parse(job['preferredTime']).toLocal()),
+                    onTap: () {
+                      context.push('/tech/job/${job['bookingId']}', extra: job);
+                    },
+                  ),
+
+                const SizedBox(height: 30),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    context.go('/tech/jobs');
+                  },
+                  icon: const Icon(Icons.assignment),
+                  label: const Text('View All Jobs'),
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(45),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildJobCard({
+    required BuildContext context,
     required String title,
     required String status,
     required String scheduledTime,
+    required VoidCallback onTap,
   }) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -83,9 +115,7 @@ class TechnicianHomeScreen extends ConsumerWidget {
               status == 'In Progress' ? Colors.orange[100] : Colors.green[100],
           labelStyle: const TextStyle(fontWeight: FontWeight.w600),
         ),
-        onTap: () {
-          // TODO: Navigate to job details
-        },
+        onTap: onTap,
       ),
     );
   }

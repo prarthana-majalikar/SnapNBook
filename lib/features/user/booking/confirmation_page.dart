@@ -38,15 +38,6 @@ class ConfirmationPage extends ConsumerWidget {
           final appliance = booking['appliance'] ?? 'N/A';
           final status = booking['status'] ?? 'N/A';
           final address = booking['address'] ?? 'N/A';
-          final dateTime = DateTime.tryParse(booking['preferredTime'] ?? '');
-          final date =
-              dateTime != null
-                  ? '${dateTime.day}/${dateTime.month}/${dateTime.year}'
-                  : 'N/A';
-          final time =
-              dateTime != null
-                  ? '${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}'
-                  : 'N/A';
 
           return Padding(
             padding: const EdgeInsets.all(20),
