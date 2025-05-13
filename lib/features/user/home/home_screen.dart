@@ -2,8 +2,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../shared/widgets/primary_button.dart';
-import '../../services/image_detection_service.dart';
+import '../../../shared/widgets/primary_button.dart';
+import '../../../services/image_detection_service.dart';
 import 'package:go_router/go_router.dart';
 
 class HomeScreen extends ConsumerWidget {

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../state/booking_provider.dart';
-import '../../shared/widgets/primary_button.dart';
+import '../../../../state/booking_provider.dart';
+import '../../../shared/widgets/primary_button.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:go_router/go_router.dart';
-import '../../../config.dart';
+import '../../../../config.dart';
 
 class ConfirmBookingSheet extends ConsumerStatefulWidget {
   @override

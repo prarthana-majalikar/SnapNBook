@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../state/booking_provider.dart';
-import '../../../shared/widgets/date_slider.dart';
-import '../../../shared/widgets/time_slot_button.dart';
+import '../../../../state/booking_provider.dart';
+import '../../../../shared/widgets/date_slider.dart';
+import '../../../../shared/widgets/time_slot_button.dart';
 import 'confirm_booking_sheet.dart';
 
 class BookingScreen extends ConsumerWidget {

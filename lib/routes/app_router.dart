@@ -1,15 +1,16 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../features/home/home_screen.dart';
+import '../features/user/home/home_screen.dart';
 import '../features/auth/login_screen.dart';
 import '../features/auth/signup_screen.dart';
 import '../state/auth_provider.dart';
-import '../features/booking/appliance_selection_screen.dart';
-import '../features/booking/booking_screen.dart';
-import '../features/booking/confirmation_page.dart';
+import '../features/user/booking/appliance_selection_screen.dart';
+import '../features/user/booking/booking_screen.dart';
+import '../features/user/booking/confirmation_page.dart';
 import '../shared/layout/main_scaffold.dart';
-import '../features/booking/booking_list_screen.dart';
-import '../features/profile/profile_screen.dart';
+import '../features/user/booking/booking_list_screen.dart';
+import '../features/user/profile/profile_screen.dart';
+import '../features/technician/home/home_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -57,6 +58,12 @@ class AppRouter {
       GoRoute(
         path: '/confirmation',
         builder: (context, state) => const ConfirmationPage(),
+      ),
+
+      // Technician Routes
+      GoRoute(
+        path: '/technician-home',
+        builder: (context, state) => const TechnicianHomeScreen(),
       ),
     ],
   );

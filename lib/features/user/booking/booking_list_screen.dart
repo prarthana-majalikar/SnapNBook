@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
-import '../../../shared/widgets/status_badge.dart';
+import '../../../../shared/widgets/status_badge.dart';
 
 final bookingsProvider = FutureProvider<List<Map<String, dynamic>>>((
   ref,
