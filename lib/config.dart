@@ -10,4 +10,6 @@ class AppConfig {
   static const String createBookingUrl = '$baseUrl/bookings';
   static String getBookingsUrl(String userId) =>
       '$baseUrl/user-bookings/$userId';
+  static String getBookingUrl(String bookingId) =>
+      '$baseUrl/bookings/$bookingId';
 }

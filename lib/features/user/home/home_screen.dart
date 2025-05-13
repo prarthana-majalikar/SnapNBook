@@ -61,7 +61,7 @@ class HomeScreen extends ConsumerWidget {
                   if (context.mounted) {
                     if (objectName != null) {
                       context.push(
-                        '/appliance-selection/${Uri.encodeComponent(objectName)}',
+                        '/appliance-selection/${Uri.encodeComponent(capitalize(objectName))}',
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -134,4 +134,9 @@ class _ServiceTile extends StatelessWidget {
       ),
     );
   }
+}
+
+String capitalize(String s) {
+  if (s.isEmpty) return s;
+  return s[0].toUpperCase() + s.substring(1).toLowerCase();
 }

@@ -79,7 +79,7 @@ class _ConfirmBookingSheetState extends ConsumerState<ConfirmBookingSheet> {
                   _parseMinute(time),
                 );
 
-                final isoTime = dateTime.toUtc().toIso8601String();
+                final isoTime = dateTime.toIso8601String();
 
                 // 2. Construct request body
                 final bookingBody = {
@@ -102,11 +102,13 @@ class _ConfirmBookingSheetState extends ConsumerState<ConfirmBookingSheet> {
 
                 if (response.statusCode == 200 || response.statusCode == 201) {
                   if (!mounted) return;
-                  context.push('/confirmation');
+                  final bookingResponse = jsonDecode(response.body);
+                  final bookingId = bookingResponse['bookingId'] ?? 'N/A';
                   print(
                     '[DEBUG] Booking API responded with status: ${response.statusCode}',
                   );
                   print('[DEBUG] Response body: ${response.body}');
+                  context.push('/confirmation/$bookingId');
                 } else {
                   print('Error response: ${response.body}');
                   ScaffoldMessenger.of(context).showSnackBar(

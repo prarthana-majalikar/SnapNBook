@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import '../../../../shared/widgets/status_badge.dart';
 import '../../../../state/auth_provider.dart';
 import '../../../../config.dart';
+import 'package:go_router/go_router.dart';
 
 final bookingsProvider = FutureProvider<List<Map<String, dynamic>>>((
   ref,
@@ -20,7 +21,17 @@ final bookingsProvider = FutureProvider<List<Map<String, dynamic>>>((
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body);
     print('[DEBUG] Bookings data: $data');
-    return List<Map<String, dynamic>>.from(data['bookings']);
+
+    final bookings = List<Map<String, dynamic>>.from(data['bookings']);
+
+    // Sort by preferredTime (ascending)
+    bookings.sort(
+      (a, b) => DateTime.parse(
+        a['preferredTime'],
+      ).compareTo(DateTime.parse(b['preferredTime'])),
+    );
+
+    return bookings;
   } else {
     throw Exception('Failed to load bookings');
   }
@@ -71,7 +82,10 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                 subtitle: Text(_formatDate(booking['preferredTime'])),
                 trailing: StatusBadge(status: booking['status']),
                 onTap: () {
-                  // TODO: Navigate to booking detail screen
+                  context.push(
+                    '/booking/${booking['bookingId']}',
+                    extra: booking,
+                  );
                 },
               );
             },

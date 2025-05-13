@@ -12,6 +12,7 @@ import '../features/user/booking/booking_list_screen.dart';
 import '../features/user/profile/profile_screen.dart';
 import '../features/technician/home/home_screen.dart';
 import '../features/auth/confirm_signup_screen.dart';
+import '../features/user/booking/booking_detail_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -66,8 +67,20 @@ class AppRouter {
       ),
       GoRoute(path: '/booking', builder: (context, state) => BookingScreen()),
       GoRoute(
-        path: '/confirmation',
-        builder: (context, state) => const ConfirmationPage(),
+        path: '/confirmation/:bookingId',
+        builder: (context, state) {
+          return ConfirmationPage(
+            bookingId: state.pathParameters['bookingId'] ?? 'unknown',
+          );
+        },
+      ),
+      GoRoute(
+        path: '/booking/:id',
+        name: 'bookingDetail',
+        builder: (context, state) {
+          final booking = state.extra as Map<String, dynamic>;
+          return BookingDetailScreen(booking: booking);
+        },
       ),
 
       // Technician Routes

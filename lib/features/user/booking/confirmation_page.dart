@@ -1,85 +1,141 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../state/booking_provider.dart'; // adjust path as needed
 import 'package:go_router/go_router.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:snapnbook/config.dart';
+
+final bookingConfirmationProvider =
+    FutureProvider.family<Map<String, dynamic>, String>((ref, bookingId) async {
+      final response = await http.get(
+        Uri.parse(AppConfig.getBookingUrl(bookingId)),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        return data;
+      } else {
+        throw Exception('Failed to load booking details');
+      }
+    });
 
 class ConfirmationPage extends ConsumerWidget {
-  const ConfirmationPage({Key? key}) : super(key: key);
+  final String bookingId;
+
+  const ConfirmationPage({Key? key, required this.bookingId}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final provider = ref.watch(bookingProvider);
-
-    final appliance = provider.applianceType ?? 'N/A';
-    final date =
-        provider.selectedDate?.toLocal().toString().split(' ')[0] ?? 'N/A';
-    final time = provider.selectedTime ?? 'N/A';
-    final address =
-        '123 Main St, City, Country'; // Or fetch from provider if available
+    final bookingAsync = ref.watch(bookingConfirmationProvider(bookingId));
 
     return Scaffold(
       appBar: AppBar(title: const Text("Booking Confirmation")),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const Icon(Icons.receipt_long, size: 80, color: Colors.green),
-            const SizedBox(height: 20),
-            const Text(
-              "Booking Confirmed!",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 30),
-            Table(
-              columnWidths: const {
-                0: IntrinsicColumnWidth(),
-                1: FlexColumnWidth(),
-              },
-              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+      body: bookingAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, _) => Center(child: Text('Error: $err')),
+        data: (booking) {
+          final appliance = booking['appliance'] ?? 'N/A';
+          final status = booking['status'] ?? 'N/A';
+          final address = booking['address'] ?? 'N/A';
+          final dateTime = DateTime.tryParse(booking['preferredTime'] ?? '');
+          final date =
+              dateTime != null
+                  ? '${dateTime.day}/${dateTime.month}/${dateTime.year}'
+                  : 'N/A';
+          final time =
+              dateTime != null
+                  ? '${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}'
+                  : 'N/A';
+
+          return Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                _buildTableRow("Appliance", appliance),
-                _buildTableRow("Date", date),
-                _buildTableRow("Time", time),
-                _buildTableRow("Price", "\$50"),
-                _buildTableRow("Address", address),
+                const Icon(Icons.check_circle, size: 80, color: Colors.green),
+                const SizedBox(height: 20),
+                const Text(
+                  "Booking Confirmed!",
+                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 30),
+                Card(
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        _buildRow("Booking ID", booking['bookingId']),
+                        _buildRow("Appliance", appliance),
+                        _buildRow(
+                          "Date & Time",
+                          _formatDateTime(booking['preferredTime']),
+                        ),
+                        _buildRow(
+                          "Status",
+                          _capitalize(status.replaceAll('_', ' ')),
+                        ),
+                        _buildRow("Address", address),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                ElevatedButton.icon(
+                  onPressed: () => context.go('/'),
+                  icon: const Icon(Icons.home),
+                  label: const Text("Back to Home"),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 30,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
               ],
             ),
-            const SizedBox(height: 30),
-            ElevatedButton.icon(
-              onPressed: () {
-                context.go('/');
-              },
-              icon: const Icon(Icons.home),
-              label: const Text("Back to Home"),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 30,
-                  vertical: 12,
-                ),
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 
-  TableRow _buildTableRow(String label, String value) {
-    return TableRow(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Text(
-            "$label:",
-            style: const TextStyle(fontWeight: FontWeight.bold),
+  Widget _buildRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        children: [
+          Expanded(
+            flex: 3,
+            child: Text(
+              "$label:",
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Text(value),
-        ),
-      ],
+          Expanded(
+            flex: 5,
+            child: Text(value, style: const TextStyle(fontSize: 16)),
+          ),
+        ],
+      ),
     );
   }
+
+  String _capitalize(String input) {
+    if (input.isEmpty) return input;
+    return input[0].toUpperCase() + input.substring(1).toLowerCase();
+  }
+}
+
+String _formatDateTime(String isoDate) {
+  final dt = DateTime.tryParse(isoDate);
+  if (dt == null) return 'N/A';
+  return DateFormat.yMMMMd().add_jm().format(dt); // e.g. May 12, 2025 2:00 PM
 }
