@@ -7,11 +7,11 @@ class AuthService {
   static const String signupUrl =
       'https://za5l26ep8e.execute-api.us-east-1.amazonaws.com/devlopment/v1/signup';
 
-  static Future<bool> login(
+  static Future<Map<String, dynamic>?> login(
     String email,
-    String password, {
-    String role = 'user',
-  }) async {
+    String password,
+    String role,
+  ) async {
     final res = await http.post(
       Uri.parse(loginUrl),
       headers: {'Content-Type': 'application/json'},
@@ -21,7 +21,11 @@ class AuthService {
     print('LOGIN STATUS: ${res.statusCode}');
     print('LOGIN BODY: ${res.body}');
 
-    return res.statusCode == 200;
+    if (res.statusCode == 200) {
+      return jsonDecode(res.body);
+    } else {
+      return null;
+    }
   }
 
   static Future<bool> signup({

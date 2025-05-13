@@ -16,13 +16,18 @@ class AppRouter {
   static final GoRouter router = GoRouter(
     redirect: (context, state) {
       final container = ProviderScope.containerOf(context);
-      final isLoggedIn = container.read(authProvider);
+      final session = container.read(authProvider);
       final path = state.uri.path;
       final isPublicPage =
           path == '/login' || path == '/signup' || path.startsWith('/confirm');
 
-      if (!isLoggedIn && !isPublicPage) return '/login';
-      if (isLoggedIn && path == '/login') return '/';
+      // 🔒 Not logged in, trying to access protected page
+      if (session == null && !isPublicPage) return '/login';
+
+      // 🔁 Already logged in, prevent access to login/signup
+      if (session != null && (path == '/login' || path == '/signup')) {
+        return session.isTechnician ? '/technician-home' : '/';
+      }
       return null;
     },
     routes: [

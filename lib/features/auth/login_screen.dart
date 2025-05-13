@@ -5,15 +5,23 @@ import '../../state/auth_provider.dart';
 import '../../shared/widgets/custom_input.dart';
 import '../../shared/widgets/primary_button.dart';
 import '../../services/auth_service.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import '../../state/auth_state.dart';
 
-class LoginScreen extends ConsumerWidget {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
+class LoginScreen extends ConsumerStatefulWidget {
   LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  String _selectedRole = 'user'; // or 'technician'
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Login')),
       body: Padding(
@@ -27,6 +35,25 @@ class LoginScreen extends ConsumerWidget {
               label: 'Password',
               obscure: true,
             ),
+            const SizedBox(height: 10),
+            DropdownButtonFormField<String>(
+              value: _selectedRole,
+              decoration: const InputDecoration(labelText: 'Role'),
+              items: const [
+                DropdownMenuItem(value: 'user', child: Text('User')),
+                DropdownMenuItem(
+                  value: 'technician',
+                  child: Text('Technician'),
+                ),
+              ],
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() {
+                    _selectedRole = value;
+                  });
+                }
+              },
+            ),
             const SizedBox(height: 24),
             PrimaryButton(
               label: 'Login',
@@ -34,14 +61,34 @@ class LoginScreen extends ConsumerWidget {
                 final email = _emailController.text.trim();
                 final password = _passwordController.text.trim();
 
-                final success = await AuthService.login(
+                final response = await AuthService.login(
                   email,
                   password,
-                ); // check AWS
+                  _selectedRole,
+                );
 
-                if (success) {
-                  ref.read(authProvider.notifier).state = true;
-                  context.go('/'); // ✅ only go to home if success
+                if (response != null) {
+                  final idToken = response['id_token'];
+                  final accessToken = response['access_token'];
+                  final decoded = JwtDecoder.decode(idToken);
+
+                  final userId = decoded['sub'];
+                  final email = decoded['email'];
+                  final role = decoded['custom:role'];
+
+                  ref.read(authProvider.notifier).state = UserSession(
+                    userId: userId,
+                    email: email,
+                    role: role,
+                    idToken: idToken,
+                    accessToken: accessToken,
+                  );
+
+                  if (role == 'technician') {
+                    context.go('/technician-home');
+                  } else {
+                    context.go('/');
+                  }
                 } else {
                   ScaffoldMessenger.of(
                     context,
