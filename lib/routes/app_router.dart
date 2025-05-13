@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:snapnbook/features/technician/jobs/job_details.dart';
 import '../features/user/home/home_screen.dart';
 import '../features/auth/login_screen.dart';
 import '../features/auth/signup_screen.dart';
@@ -13,6 +14,7 @@ import '../features/user/profile/profile_screen.dart';
 import '../features/technician/home/home_screen.dart';
 import '../features/auth/confirm_signup_screen.dart';
 import '../features/user/booking/booking_detail_screen.dart';
+import '../shared/layout/technician_scaffold.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -83,10 +85,36 @@ class AppRouter {
         },
       ),
 
-      // Technician Routes
+      // ------------------------------Technician Routes-------------------------------------------------
+      ShellRoute(
+        builder: (context, state, child) {
+          return TechnicianScaffold(
+            child: child,
+          ); // <-- contains bottom nav bar
+        },
+        // Routes that need to display the bottom nav bar should be added here
+        routes: [
+          GoRoute(
+            path: '/technician-home',
+            builder: (context, state) => TechnicianHomeScreen(),
+          ),
+          GoRoute(
+            path: '/technician-jobs',
+            builder: (context, state) => TechnicianHomeScreen(),
+          ),
+          GoRoute(
+            path: '/technician-profile',
+            builder: (context, state) => ProfileScreen(),
+          ),
+        ],
+      ),
+
       GoRoute(
-        path: '/technician-home',
-        builder: (context, state) => const TechnicianHomeScreen(),
+        path: '/job-details',
+        builder: (context, state) {
+          final job = state.extra as Map<String, dynamic>;
+          return JobDetailsScreen(job: job);
+        },
       ),
     ],
   );

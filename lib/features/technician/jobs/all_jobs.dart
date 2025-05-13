@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../providers/jobs_provider.dart';
-import 'job_details.dart';
+import 'package:go_router/go_router.dart';
 
 class TechnicianAllJobsScreen extends ConsumerWidget {
   const TechnicianAllJobsScreen({super.key});
@@ -33,14 +33,7 @@ class TechnicianAllJobsScreen extends ConsumerWidget {
                 scheduledTime: _formatTime(job['preferredTime']),
                 address: job['address'],
                 onTap: () {
-                  // TODO: Navigate to job details with bookingId
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (_) => JobDetailScreen(bookingId: job['bookingId']),
-                    ),
-                  );
+                  context.push('/job-details', extra: job);
                 },
               );
             },
