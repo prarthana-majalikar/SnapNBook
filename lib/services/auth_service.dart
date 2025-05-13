@@ -1,19 +1,15 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../../../../config.dart';
 
 class AuthService {
-  static const String loginUrl =
-      'https://za5l26ep8e.execute-api.us-east-1.amazonaws.com/devlopment/v1/login';
-  static const String signupUrl =
-      'https://za5l26ep8e.execute-api.us-east-1.amazonaws.com/devlopment/v1/signup';
-
   static Future<Map<String, dynamic>?> login(
     String email,
     String password,
     String role,
   ) async {
     final res = await http.post(
-      Uri.parse(loginUrl),
+      Uri.parse(AppConfig.loginUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email, 'password': password, 'role': role}),
     );
@@ -39,7 +35,7 @@ class AuthService {
     String role = 'user',
   }) async {
     final res = await http.post(
-      Uri.parse(signupUrl),
+      Uri.parse(AppConfig.signupUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'firstname': firstName,
@@ -64,11 +60,8 @@ class AuthService {
     String code, {
     String role = 'user',
   }) async {
-    const String confirmUrl =
-        'https://za5l26ep8e.execute-api.us-east-1.amazonaws.com/devlopment/v1/confirm-signup';
-
     final res = await http.post(
-      Uri.parse(confirmUrl),
+      Uri.parse(AppConfig.confirmUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email, 'code': code, 'role': role}),
     );

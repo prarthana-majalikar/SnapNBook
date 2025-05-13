@@ -90,7 +90,7 @@ class _ConfirmBookingSheetState extends ConsumerState<ConfirmBookingSheet> {
                 };
 
                 // 3. Make API call
-                final url = Uri.parse(AppConfig.createBooking);
+                final url = Uri.parse(AppConfig.createBookingUrl);
 
                 print('[DEBUG] Sending booking request to $url');
                 print('[DEBUG] Request body: ${jsonEncode(bookingBody)}');

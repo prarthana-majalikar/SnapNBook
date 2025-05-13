@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import '../../../../shared/widgets/status_badge.dart';
 import '../../../../state/auth_provider.dart';
+import '../../../../config.dart';
 
 final bookingsProvider = FutureProvider<List<Map<String, dynamic>>>((
   ref,
@@ -14,11 +15,7 @@ final bookingsProvider = FutureProvider<List<Map<String, dynamic>>>((
   }
 
   final userId = userSession.userId;
-  final response = await http.get(
-    Uri.parse(
-      'https://a8lc7dia7h.execute-api.us-east-1.amazonaws.com/production/user-bookings/$userId',
-    ),
-  );
+  final response = await http.get(Uri.parse(AppConfig.getBookingsUrl(userId)));
 
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body);
