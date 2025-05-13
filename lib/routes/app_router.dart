@@ -11,6 +11,7 @@ import '../shared/layout/main_scaffold.dart';
 import '../features/user/booking/booking_list_screen.dart';
 import '../features/user/profile/profile_screen.dart';
 import '../features/technician/home/home_screen.dart';
+import '../features/auth/confirm_signup_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -52,6 +53,10 @@ class AppRouter {
       // Routes that don't need the bottom nav bar should be added here
       GoRoute(path: '/login', builder: (context, state) => LoginScreen()),
       GoRoute(path: '/signup', builder: (context, state) => SignupScreen()),
+      GoRoute(
+        path: '/confirm',
+        builder: (context, state) => ConfirmSignupScreen(),
+      ),
       GoRoute(
         path: '/appliance-selection/:detected',
         builder: (context, state) {
