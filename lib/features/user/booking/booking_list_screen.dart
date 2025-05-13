@@ -3,29 +3,49 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import '../../../../shared/widgets/status_badge.dart';
+import '../../../../state/auth_provider.dart';
 
 final bookingsProvider = FutureProvider<List<Map<String, dynamic>>>((
   ref,
 ) async {
+  final userSession = ref.watch(authProvider);
+  if (userSession == null || userSession.userId.isEmpty) {
+    throw Exception('User not logged in');
+  }
+
+  final userId = userSession.userId;
   final response = await http.get(
     Uri.parse(
-      'https://yzs6j2oypb.execute-api.us-east-1.amazonaws.com/development/v1/bookings?userId=u555',
+      'https://a8lc7dia7h.execute-api.us-east-1.amazonaws.com/production/user-bookings/$userId',
     ),
   );
 
   if (response.statusCode == 200) {
     final data = jsonDecode(response.body);
+    print('[DEBUG] Bookings data: $data');
     return List<Map<String, dynamic>>.from(data['bookings']);
   } else {
     throw Exception('Failed to load bookings');
   }
 });
 
-class BookingListScreen extends ConsumerWidget {
+class BookingListScreen extends ConsumerStatefulWidget {
   const BookingListScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<BookingListScreen> createState() => _BookingListScreenState();
+}
+
+class _BookingListScreenState extends ConsumerState<BookingListScreen> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Refresh the bookings when screen is shown
+    Future.microtask(() => ref.refresh(bookingsProvider));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final bookingsAsync = ref.watch(bookingsProvider);
 
     return Scaffold(

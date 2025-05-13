@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:go_router/go_router.dart';
 import '../../../../config.dart';
+import '../../../../state/auth_provider.dart';
 
 class ConfirmBookingSheet extends ConsumerStatefulWidget {
   @override
@@ -25,6 +26,7 @@ class _ConfirmBookingSheetState extends ConsumerState<ConfirmBookingSheet> {
   @override
   Widget build(BuildContext context) {
     final provider = ref.watch(bookingProvider);
+    final user = ref.read(authProvider);
     final selectedDate = provider.selectedDate;
     final selectedTime = provider.selectedTime;
     final appliance = provider.applianceType ?? "Not selected";
@@ -47,8 +49,6 @@ class _ConfirmBookingSheetState extends ConsumerState<ConfirmBookingSheet> {
           ),
           _InfoRow(label: "Time", value: selectedTime ?? "Not selected"),
           _InfoRow(label: "Appliance", value: appliance),
-          _InfoRow(label: "Address", value: "123 Main St, City, Country"),
-          _InfoRow(label: "Price", value: "\$50"),
 
           const SizedBox(height: 20),
           PrimaryButton(
@@ -59,10 +59,6 @@ class _ConfirmBookingSheetState extends ConsumerState<ConfirmBookingSheet> {
                 final appliance = provider.applianceType ?? 'Unknown';
                 final date = provider.selectedDate;
                 final time = provider.selectedTime;
-                final address =
-                    addressController.text.trim().isEmpty
-                        ? "Test address"
-                        : addressController.text.trim();
 
                 if (date == null || time == null) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -87,10 +83,10 @@ class _ConfirmBookingSheetState extends ConsumerState<ConfirmBookingSheet> {
 
                 // 2. Construct request body
                 final bookingBody = {
-                  "userId": "b@gmail.com", // Dummy user
+                  "userId": user!.userId,
                   "appliance": appliance,
-                  "issue": "Scratches", // Dummy issue for now
                   "preferredTime": isoTime,
+                  "issue": "Issue description",
                 };
 
                 // 3. Make API call

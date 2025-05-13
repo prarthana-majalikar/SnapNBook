@@ -71,8 +71,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   final idToken = response['id_token'];
                   final accessToken = response['access_token'];
                   final decoded = JwtDecoder.decode(idToken);
+                  final userId = response['technicianId'] ?? response['userId'];
 
-                  final userId = decoded['sub'];
+                  print("UserId :  $userId");
                   final email = decoded['email'];
                   final role = decoded['custom:role'];
 
