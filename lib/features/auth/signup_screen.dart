@@ -53,11 +53,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       // 🔐 Later, you can do something like:
       // ref.read(authProvider.notifier).setUser(...);
 
-      if (_selectedRole == 'technician') {
-        context.go('/tech-dashboard');
-      } else {
-        context.go('/home');
-      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Signup successful')));
+      context.go('/confirm');
     } else {
       ScaffoldMessenger.of(
         context,
