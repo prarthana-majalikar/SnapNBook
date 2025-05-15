@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import '../../../../providers/jobs_provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:snapnbook/shared/widgets/job_card.dart';
 
 class TechnicianAllJobsScreen extends ConsumerWidget {
   const TechnicianAllJobsScreen({super.key});
@@ -27,10 +27,10 @@ class TechnicianAllJobsScreen extends ConsumerWidget {
             itemBuilder: (context, index) {
               final job = jobs[index];
 
-              return _buildJobCard(
-                title: '${job['appliance']} - ${job['issue']}',
+              return buildJobCard(
+                title: '${job['appliance']} Repair',
                 status: job['status'],
-                scheduledTime: _formatTime(job['preferredTime']),
+                scheduledTime: formatPreferredTime(job['preferredTime']),
                 address: job['address'],
                 onTap: () {
                   context.push('/job-details', extra: job);
@@ -41,35 +41,5 @@ class TechnicianAllJobsScreen extends ConsumerWidget {
         },
       ),
     );
-  }
-
-  Widget _buildJobCard({
-    required String title,
-    required String status,
-    required String scheduledTime,
-    required String address,
-    required VoidCallback onTap,
-  }) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: ListTile(
-        leading: const Icon(Icons.build_circle, color: Colors.deepPurple),
-        title: Text(title),
-        subtitle: Text('Scheduled: $scheduledTime\n$address'),
-        isThreeLine: true,
-        trailing: Chip(
-          label: Text(status),
-          backgroundColor:
-              status == 'In Progress' ? Colors.orange[100] : Colors.green[100],
-          labelStyle: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-        onTap: onTap,
-      ),
-    );
-  }
-
-  String _formatTime(String isoTime) {
-    final dateTime = DateTime.parse(isoTime).toLocal();
-    return DateFormat('MMM dd, h:mm a').format(dateTime);
   }
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart'; // For formatting datetime
 import 'package:go_router/go_router.dart';
 import "../../../providers/jobs_provider.dart";
+import 'package:snapnbook/shared/widgets/job_card.dart';
 
 class TechnicianHomeScreen extends ConsumerStatefulWidget {
   const TechnicianHomeScreen({super.key});
@@ -113,15 +113,13 @@ class _TechnicianHomeScreenState extends ConsumerState<TechnicianHomeScreen> {
                 if (activeTodayJobs.isEmpty)
                   const Text('No active jobs for today.'),
                 for (var job in activeTodayJobs)
-                  _buildJobCard(
-                    context: context,
-                    title: '${job['type']} - ${job['appliance']}',
+                  buildJobCard(
+                    title: '${job['type']} Repair',
                     status: job['status'],
-                    scheduledTime: DateFormat(
-                      'MMM dd, hh:mm a',
-                    ).format(DateTime.parse(job['preferredTime']).toLocal()),
+                    scheduledTime: formatPreferredTime(job['preferredTime']),
+                    address: job['address'],
                     onTap: () {
-                      context.push('/tech/job/${job['bookingId']}', extra: job);
+                      context.push('/job-details', extra: job);
                     },
                   ),
 
@@ -144,39 +142,15 @@ class _TechnicianHomeScreenState extends ConsumerState<TechnicianHomeScreen> {
     );
   }
 
-  Widget _buildJobCard({
-    required BuildContext context,
-    required String title,
-    required String status,
-    required String scheduledTime,
-    required VoidCallback onTap,
-  }) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      child: ListTile(
-        leading: const Icon(Icons.build_circle, color: Colors.deepPurple),
-        title: Text(title),
-        subtitle: Text('Scheduled: $scheduledTime'),
-        trailing: Chip(
-          label: Text(status),
-          backgroundColor:
-              status == 'In Progress' ? Colors.orange[100] : Colors.green[100],
-          labelStyle: const TextStyle(fontWeight: FontWeight.w600),
-        ),
-        onTap: onTap,
-      ),
-    );
-  }
-}
+  String _friendlyErrorMessage(Object err) {
+    final msg = err.toString();
 
-String _friendlyErrorMessage(Object err) {
-  final msg = err.toString();
-
-  if (msg.contains('User not logged in')) {
-    return 'Please log in to view your jobs.';
-  } else if (msg.contains('Failed to load jobs')) {
-    return 'We couldn\'t fetch your job list. Please check your internet connection or try again later.';
-  } else {
-    return 'Unexpected error occurred. Please try again.';
+    if (msg.contains('User not logged in')) {
+      return 'Please log in to view your jobs.';
+    } else if (msg.contains('Failed to load jobs')) {
+      return 'We couldn\'t fetch your job list. Please check your internet connection or try again later.';
+    } else {
+      return 'Unexpected error occurred. Please try again.';
+    }
   }
 }
