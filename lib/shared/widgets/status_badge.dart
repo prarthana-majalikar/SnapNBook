@@ -13,7 +13,7 @@ class StatusBadge extends StatelessWidget {
         return Colors.orange;
       case 'CANCELLED':
         return Colors.red;
-      case 'BOOKED':
+      case 'ASSIGNED':
         return Colors.blue;
       default:
         return Colors.grey;
