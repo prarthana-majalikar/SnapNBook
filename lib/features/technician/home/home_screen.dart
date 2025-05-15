@@ -26,7 +26,43 @@ class TechnicianHomeScreen extends ConsumerWidget {
       ),
       body: jobAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('Error: $err')),
+        error:
+            (err, _) => Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: Colors.redAccent,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Something went wrong',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _friendlyErrorMessage(err),
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton.icon(
+                      onPressed: () => ref.refresh(jobsProvider),
+                      icon: const Icon(Icons.refresh),
+                      label: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
         data: (jobs) {
           final today = DateTime.now();
           final activeTodayJobs =
@@ -118,5 +154,17 @@ class TechnicianHomeScreen extends ConsumerWidget {
         onTap: onTap,
       ),
     );
+  }
+}
+
+String _friendlyErrorMessage(Object err) {
+  final msg = err.toString();
+
+  if (msg.contains('User not logged in')) {
+    return 'Please log in to view your jobs.';
+  } else if (msg.contains('Failed to load jobs')) {
+    return 'We couldn\'t fetch your job list. Please check your internet connection or try again later.';
+  } else {
+    return 'Unexpected error occurred. Please try again.';
   }
 }
