@@ -63,7 +63,52 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
         error: (err, _) => Center(child: Text('Error: $err')),
         data: (bookings) {
           if (bookings.isEmpty) {
-            return const Center(child: Text('No bookings found.'));
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.calendar_today,
+                      size: 80,
+                      color: Colors.grey.shade400,
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'No Bookings Yet',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    const Text(
+                      'You haven’t made any service bookings yet.\nOnce you do, they’ll appear here.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 30),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        context.go('/'); // change route as needed
+                      },
+                      icon: const Icon(Icons.home),
+                      label: const Text('Explore Services'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
           }
 
           return ListView.separated(

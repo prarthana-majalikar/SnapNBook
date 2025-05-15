@@ -28,16 +28,16 @@ class TechnicianHomeScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(child: Text('Error: $err')),
         data: (jobs) {
-          final today = DateTime.now().toUtc();
+          final today = DateTime.now();
           final activeTodayJobs =
               jobs.where((job) {
                 final preferredTime = DateTime.tryParse(
                   job['preferredTime'] ?? '',
                 );
                 if (preferredTime == null) return false;
-                return preferredTime.toUtc().day == today.day &&
-                    preferredTime.toUtc().month == today.month &&
-                    preferredTime.toUtc().year == today.year &&
+                return preferredTime.day == today.day &&
+                    preferredTime.month == today.month &&
+                    preferredTime.year == today.year &&
                     (job['status'] == 'Assigned' ||
                         job['status'] == 'In Progress');
               }).toList();
