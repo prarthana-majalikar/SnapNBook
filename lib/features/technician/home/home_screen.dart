@@ -4,11 +4,24 @@ import 'package:intl/intl.dart'; // For formatting datetime
 import 'package:go_router/go_router.dart';
 import "../../../providers/jobs_provider.dart";
 
-class TechnicianHomeScreen extends ConsumerWidget {
+class TechnicianHomeScreen extends ConsumerStatefulWidget {
   const TechnicianHomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<TechnicianHomeScreen> createState() =>
+      _TechnicianHomeScreenState();
+}
+
+class _TechnicianHomeScreenState extends ConsumerState<TechnicianHomeScreen> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Refresh provider whenever screen becomes active
+    Future.microtask(() => ref.refresh(jobsProvider));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final technicianName = 'Technician';
     final jobAsync = ref.watch(jobsProvider);
 
@@ -83,15 +96,14 @@ class TechnicianHomeScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Welcome, $technicianName 👋',
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 20),
-
+                // Text(
+                //   'Welcome, $technicianName 👋',
+                //   style: const TextStyle(
+                //     fontSize: 22,
+                //     fontWeight: FontWeight.bold,
+                //   ),
+                // ),
+                // const SizedBox(height: 20),
                 const Text(
                   'Your Active Jobs',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
@@ -116,7 +128,7 @@ class TechnicianHomeScreen extends ConsumerWidget {
                 const SizedBox(height: 30),
                 ElevatedButton.icon(
                   onPressed: () {
-                    context.go('/tech/jobs');
+                    context.go('/technician-jobs');
                   },
                   icon: const Icon(Icons.assignment),
                   label: const Text('View All Jobs'),

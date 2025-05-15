@@ -15,6 +15,7 @@ import '../features/technician/home/home_screen.dart';
 import '../features/auth/confirm_signup_screen.dart';
 import '../features/user/booking/booking_detail_screen.dart';
 import '../shared/layout/technician_scaffold.dart';
+import '../features/technician/jobs/all_jobs.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -100,7 +101,7 @@ class AppRouter {
           ),
           GoRoute(
             path: '/technician-jobs',
-            builder: (context, state) => TechnicianHomeScreen(),
+            builder: (context, state) => TechnicianAllJobsScreen(),
           ),
           GoRoute(
             path: '/technician-profile',
