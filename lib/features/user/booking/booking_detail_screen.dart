@@ -66,7 +66,7 @@ class BookingDetailScreen extends StatelessWidget {
                 _infoTile(Icons.home, 'Address', booking['address']),
                 _infoTile(Icons.info_outline, 'Status', booking['status']),
 
-                if (status != 'Pending Assignment' && technicianId != null)
+                if (status != 'PENDING_ASSIGNMENT' && technicianId != null)
                   FutureBuilder<Map<String, dynamic>?>(
                     future: _fetchTechnician(technicianId),
                     builder: (context, snapshot) {

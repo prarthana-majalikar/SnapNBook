@@ -48,6 +48,14 @@ class AppRouter {
             builder: (context, state) => const BookingListScreen(),
           ),
           GoRoute(
+            path: '/booking/:id',
+            name: 'bookingDetail',
+            builder: (context, state) {
+              final booking = state.extra as Map<String, dynamic>;
+              return BookingDetailScreen(booking: booking);
+            },
+          ),
+          GoRoute(
             path: '/profile',
             builder: (context, state) => const ProfileScreen(),
           ),
@@ -77,14 +85,6 @@ class AppRouter {
           );
         },
       ),
-      GoRoute(
-        path: '/booking/:id',
-        name: 'bookingDetail',
-        builder: (context, state) {
-          final booking = state.extra as Map<String, dynamic>;
-          return BookingDetailScreen(booking: booking);
-        },
-      ),
 
       // ------------------------------Technician Routes-------------------------------------------------
       ShellRoute(
@@ -107,15 +107,14 @@ class AppRouter {
             path: '/technician-profile',
             builder: (context, state) => ProfileScreen(),
           ),
+          GoRoute(
+            path: '/job-details',
+            builder: (context, state) {
+              final job = state.extra as Map<String, dynamic>;
+              return JobDetailsScreen(job: job);
+            },
+          ),
         ],
-      ),
-
-      GoRoute(
-        path: '/job-details',
-        builder: (context, state) {
-          final job = state.extra as Map<String, dynamic>;
-          return JobDetailsScreen(job: job);
-        },
       ),
     ],
   );

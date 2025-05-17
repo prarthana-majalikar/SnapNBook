@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../state/auth_provider.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -59,7 +60,8 @@ class ProfileScreen extends ConsumerWidget {
               leading: const Icon(Icons.logout),
               title: const Text("Logout"),
               onTap: () {
-                // TODO: Implement logout
+                ref.read(authProvider.notifier).state = null;
+                context.go('/login');
               },
             ),
           ],
