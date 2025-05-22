@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "169271469245",
+    "project_id": "snapnbook-legacyfcm",
+    "storage_bucket": "snapnbook-legacyfcm.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:169271469245:android:4eb4d894533e62bde703d4",
+        "android_client_info": {
+          "package_name": "com.example.snapnbook"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBFA3rw7FH1X_eKSFsteC8gb9KbKhg49TE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

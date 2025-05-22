@@ -6,33 +6,37 @@ import '../../../../state/auth_provider.dart';
 
 final jobsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
   final userSession = ref.watch(authProvider);
+
   if (userSession == null || userSession.userId.isEmpty) {
     throw Exception('User not logged in');
   }
+
   final technicianId = userSession.userId;
-  print(
-    '[DEBUG] Technician ID: $technicianId',
-  ); // Debugging line to check the technician ID
+  print('[DEBUG] Technician ID: $technicianId');
+
   final response = await http.get(
     Uri.parse(AppConfig.getJobsUrl(technicianId)),
-    headers: {
-      'Content-Type': 'application/json',
-      // 'Authorization':
-      //     'Bearer your_token_here', // ⛔ Replace with real token logic
-    },
+    headers: {'Content-Type': 'application/json'},
   );
-  print(
-    '[DEBUG] Jobs response: ${response.body}',
-  ); // Debugging line to check the response
-  print(
-    '[DEBUG] Jobs status code: ${response.statusCode}',
-  ); // Debugging line to check the status code
+
+  print('[DEBUG] Jobs response: ${response.body}');
+  print('[DEBUG] Jobs status code: ${response.statusCode}');
 
   if (response.statusCode == 200) {
     final decoded = jsonDecode(response.body);
     final List<dynamic> data = decoded['bookings'];
-    print('Jobs data: $data'); // Debugging line to check the response
-    return data.cast<Map<String, dynamic>>();
+
+    // 🔎 Optional client-side fallback filtering
+    final acceptedJobs = data
+        .where((job) =>
+            job is Map &&
+            job['status'] != null &&
+            job['status'].toString().toUpperCase() == 'ACCEPTED')
+        .cast<Map<String, dynamic>>()
+        .toList();
+
+    print('[DEBUG] Accepted Jobs: $acceptedJobs');
+    return acceptedJobs;
   } else {
     throw Exception('Failed to load jobs');
   }

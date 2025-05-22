@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "497301365327",
+    "firebase_url": "https://snapnbook-66909-default-rtdb.firebaseio.com",
+    "project_id": "snapnbook-66909",
+    "storage_bucket": "snapnbook-66909.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:497301365327:android:1668744ecdc19421a2003a",
+        "android_client_info": {
+          "package_name": "com.example.snapnbook"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_YnDS-1WabcUyKcK6H8WULpmmwiDwvPc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

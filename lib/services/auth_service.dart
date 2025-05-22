@@ -8,18 +8,31 @@ class AuthService {
     String password,
     String role,
   ) async {
-    final res = await http.post(
-      Uri.parse(AppConfig.loginUrl),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email, 'password': password, 'role': role}),
-    );
+    try {
+      final fcmToken = 1;
 
-    print('LOGIN STATUS: ${res.statusCode}');
-    print('LOGIN BODY: ${res.body}');
+      final res = await http.post(
+        Uri.parse(AppConfig.loginUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+          'role': role,
+          'fcmToken': fcmToken,
+        }),
+      );
 
-    if (res.statusCode == 200) {
-      return jsonDecode(res.body);
-    } else {
+      print('LOGIN STATUS: ${res.statusCode}');
+      print('LOGIN BODY: ${res.body}');
+
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+        return data;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('❌ Login failed: $e');
       return null;
     }
   }

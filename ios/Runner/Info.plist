@@ -49,5 +49,18 @@
 	<string>This app uses the camera to let you scan appliances for repair.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app needs photo library access for uploading images.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app requires location access to show your position on the map</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Location is used to improve the service</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+<string>This app needs access to your location to show your position on the map.</string>
+<key>NSLocationAlwaysUsageDescription</key>
+<string>This app uses your location to improve tracking features.</string>
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>This app uses your location to track technician routes and provide live updates.</string>
+
+	<key>io.flutter.embedded_views_preview</key>
+	<true/>
 </dict>
 </plist>
