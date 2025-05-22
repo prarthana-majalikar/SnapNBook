@@ -3,35 +3,33 @@ import 'package:go_router/go_router.dart';
 import '../../services/auth_service.dart';
 
 class ConfirmSignupScreen extends StatefulWidget {
-  const ConfirmSignupScreen({super.key});
+  final String role;
+
+  const ConfirmSignupScreen({
+    super.key,
+    required this.role,
+  });
 
   @override
   State<ConfirmSignupScreen> createState() => _ConfirmSignupScreenState();
 }
 
 class _ConfirmSignupScreenState extends State<ConfirmSignupScreen> {
-  late final TextEditingController _emailController;
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _codeController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _emailController = TextEditingController();
-  }
 
   void _confirmSignup() async {
     final email = _emailController.text.trim();
     final code = _codeController.text.trim();
+    final role = widget.role;
 
-    final success = await AuthService.confirmSignup(email, code);
+    final success = await AuthService.confirmSignup(email, code, role: role);
 
     if (!mounted) return;
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Verification successful. You can now login.'),
-        ),
+        const SnackBar(content: Text('Verification successful. You can now login.')),
       );
       context.go('/login');
     } else {
@@ -48,7 +46,7 @@ class _ConfirmSignupScreenState extends State<ConfirmSignupScreen> {
         title: const Text('Confirm Signup'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/signup'), // ✅ go to signup explicitly
+          onPressed: () => context.go('/signup?role=${widget.role}'),
         ),
       ),
       body: Padding(

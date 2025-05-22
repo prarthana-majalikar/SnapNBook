@@ -8,12 +8,7 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // In a real app, you'd get user data from authProvider
-    final dummyUser = {
-      "name": "John Doe",
-      "email": "john.doe@example.com",
-      "phone": "+1 234 567 890",
-    };
+    final session = ref.watch(authProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text("Profile")),
@@ -27,35 +22,41 @@ class ProfileScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              dummyUser['name']!,
+              session != null ? '${session.firstName} ${session.lastName}' : 'User',
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
-              dummyUser['email']!,
+              session?.email ?? '',
               style: const TextStyle(color: Colors.grey),
             ),
             const SizedBox(height: 4),
             Text(
-              dummyUser['phone']!,
+              session?.mobile ?? '',
               style: const TextStyle(color: Colors.grey),
             ),
-
             const SizedBox(height: 32),
-            ListTile(
-              leading: const Icon(Icons.history),
-              title: const Text("My Bookings"),
-              onTap: () => context.push('/bookings'),
-            ),
-            const Divider(),
 
+            // Role-based bookings tile
+            session?.isTechnician == true
+                ? ListTile(
+                    leading: const Icon(Icons.assignment_turned_in),
+                    title: const Text("Assigned Jobs"),
+                    onTap: () => context.push('/assigned-jobs'),
+                  )
+                : ListTile(
+                    leading: const Icon(Icons.history),
+                    title: const Text("My Bookings"),
+                    onTap: () => context.push('/bookings'),
+                  ),
+
+            const Divider(),
             ListTile(
               leading: const Icon(Icons.settings),
               title: const Text("Settings"),
-              onTap: () {}, // Later
+              onTap: () => context.push('/edit-profile'),
             ),
             const Divider(),
-
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text("Logout"),

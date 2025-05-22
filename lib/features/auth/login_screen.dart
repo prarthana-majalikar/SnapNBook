@@ -67,15 +67,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   _selectedRole,
                 );
 
-                if (response != null) {
+                if (response != null && response['error'] == null) {
                   final idToken = response['id_token'];
                   final accessToken = response['access_token'];
                   final decoded = JwtDecoder.decode(idToken);
                   final userId = response['technicianId'] ?? response['userId'];
 
-                  print("UserId :  $userId");
                   final email = decoded['email'];
                   final role = decoded['custom:role'];
+                  final firstName = response['firstname'] ?? '';
+                  final lastName = response['lastname'] ?? '';
+                  final mobile = response['mobile'] ?? '';
 
                   ref.read(authProvider.notifier).state = UserSession(
                     userId: userId,
@@ -83,6 +85,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     role: role,
                     idToken: idToken,
                     accessToken: accessToken,
+                    firstName: firstName,
+                    lastName: lastName,
+                    mobile: mobile,
                   );
 
                   if (role == 'technician') {
@@ -91,9 +96,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     context.go('/');
                   }
                 } else {
+                  final message = response?['error'] ?? 'Login failed';
                   ScaffoldMessenger.of(
                     context,
-                  ).showSnackBar(const SnackBar(content: Text('Login failed')));
+                  ).showSnackBar(SnackBar(content: Text(message)));
                 }
               },
             ),
