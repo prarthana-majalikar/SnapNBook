@@ -18,6 +18,7 @@ import '../features/technician/jobs/accepted_jobs.dart';
 import '../shared/layout/technician_scaffold.dart';
 import '../features/auth/confirm_signup_screen.dart';
 import '../features/user/booking/booking_detail_screen.dart';
+import '../features/user/booking/payment_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -41,7 +42,10 @@ class AppRouter {
         builder: (context, state, child) => UserScaffold(child: child),
         routes: [
           GoRoute(path: '/', builder: (context, state) => HomeScreen()),
-          GoRoute(path: '/bookings', builder: (context, state) => const BookingListScreen()),
+          GoRoute(
+            path: '/bookings',
+            builder: (context, state) => const BookingListScreen(),
+          ),
           GoRoute(
             path: '/booking/:id',
             name: 'bookingDetail',
@@ -50,14 +54,20 @@ class AppRouter {
               return BookingDetailScreen(booking: booking);
             },
           ),
-          GoRoute(path: '/profile', builder: (context, state) => const ProfileScreen()),
+          GoRoute(
+            path: '/profile',
+            builder: (context, state) => const ProfileScreen(),
+          ),
         ],
       ),
 
       // Public routes
       GoRoute(path: '/login', builder: (context, state) => LoginScreen()),
       GoRoute(path: '/signup', builder: (context, state) => SignupScreen()),
-      GoRoute(path: '/confirm', builder: (context, state) => ConfirmSignupScreen()),
+      GoRoute(
+        path: '/confirm',
+        builder: (context, state) => ConfirmSignupScreen(),
+      ),
 
       // Booking flow
       GoRoute(
@@ -70,9 +80,18 @@ class AppRouter {
       GoRoute(path: '/booking', builder: (context, state) => BookingScreen()),
       GoRoute(
         path: '/confirmation/:bookingId',
-        builder: (context, state) => ConfirmationPage(
-          bookingId: state.pathParameters['bookingId'] ?? 'unknown',
-        ),
+        builder:
+            (context, state) => ConfirmationPage(
+              bookingId: state.pathParameters['bookingId'] ?? 'unknown',
+            ),
+      ),
+      GoRoute(
+        path: '/payment/:bookingId/:amount',
+        builder: (context, state) {
+          final bookingId = state.pathParameters['bookingId']!;
+          final amount = state.pathParameters['amount']!;
+          return PaymentScreen(bookingId: bookingId, amount: amount);
+        },
       ),
 
       // Technician routes under technician scaffold
@@ -82,28 +101,38 @@ class AppRouter {
           GoRoute(
             path: '/technician-home',
             builder: (context, state) {
-              final session = ProviderScope.containerOf(context).read(authProvider);
+              final session = ProviderScope.containerOf(
+                context,
+              ).read(authProvider);
               return AcceptedJobsScreen(technicianId: session?.userId ?? '');
             },
           ),
           GoRoute(
             path: '/technician-all-jobs',
             builder: (context, state) {
-              final session = ProviderScope.containerOf(context).read(authProvider);
-              return TechnicianAllJobsScreen(technicianId: session?.userId ?? '');
+              final session = ProviderScope.containerOf(
+                context,
+              ).read(authProvider);
+              return TechnicianAllJobsScreen(
+                technicianId: session?.userId ?? '',
+              );
             },
           ),
           GoRoute(
             path: '/assigned-jobs',
             builder: (context, state) {
-              final session = ProviderScope.containerOf(context).read(authProvider);
+              final session = ProviderScope.containerOf(
+                context,
+              ).read(authProvider);
               return AssignedJobsScreen(technicianId: session?.userId ?? '');
             },
           ),
           GoRoute(
             path: '/accepted-jobs',
             builder: (context, state) {
-              final session = ProviderScope.containerOf(context).read(authProvider);
+              final session = ProviderScope.containerOf(
+                context,
+              ).read(authProvider);
               return AcceptedJobsScreen(technicianId: session?.userId ?? '');
             },
           ),
@@ -121,7 +150,6 @@ class AppRouter {
         ],
       ),
 
-      
       GoRoute(
         path: '/track/:techId',
         builder: (context, state) {

@@ -7,7 +7,9 @@ import '../../../../state/auth_provider.dart';
 import '../../../../config.dart';
 import 'package:go_router/go_router.dart';
 
-final bookingsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final bookingsProvider = FutureProvider<List<Map<String, dynamic>>>((
+  ref,
+) async {
   final userSession = ref.watch(authProvider);
   if (userSession == null || userSession.userId.isEmpty) {
     throw Exception('User not logged in');
@@ -24,7 +26,9 @@ final bookingsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async 
 
     // Sort by preferredTime (ascending)
     bookings.sort(
-      (a, b) => DateTime.parse(a['preferredTime']).compareTo(DateTime.parse(b['preferredTime'])),
+      (a, b) => DateTime.parse(
+        a['preferredTime'],
+      ).compareTo(DateTime.parse(b['preferredTime'])),
     );
 
     return bookings;
@@ -92,7 +96,10 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                       icon: const Icon(Icons.home),
                       label: const Text('Explore Services'),
                       style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 12,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -115,16 +122,22 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
               String statusLabel = 'UNKNOWN';
 
               final status = booking['status'] ?? '';
-              final hasAssignedTech = booking['assignedTechId'] != null && booking['assignedTechId'] != 'None';
+              final hasAssignedTech =
+                  booking['assignedTechId'] != null &&
+                  booking['assignedTechId'] != 'None';
 
               if (status == 'ASSIGNED' && hasAssignedTech) {
                 statusLabel = 'ASSIGNED';
               } else if (status == 'ACCEPTED') {
                 statusLabel = 'ACCEPTED';
+              } else if (status == 'COMPLETED') {
+                statusLabel = 'COMPLETED';
               } else if (status == 'PENDING_ASSIGNMENT') {
                 statusLabel = 'PENDING_ASSIGNMENT';
               } else if (status == 'NO_TECH_AVAILABLE') {
                 statusLabel = 'NO_TECH_AVAILABLE';
+              } else if (status == 'CANCELLED') {
+                statusLabel = 'CANCELLED';
               }
 
               return ListTile(
