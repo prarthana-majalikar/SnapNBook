@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../shared/widgets/primary_button.dart';
 import '../../../services/image_detection_service.dart';
 import 'package:go_router/go_router.dart';
+import "../../../shared/constants/categories.dart";
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -92,10 +93,26 @@ class HomeScreen extends ConsumerWidget {
               shrinkWrap: true,
               physics: NeverScrollableScrollPhysics(),
               children: const [
-                _ServiceTile(icon: Icons.tv, label: 'Appliances'),
-                _ServiceTile(icon: Icons.computer, label: 'Electronics'),
-                _ServiceTile(icon: Icons.plumbing, label: 'Plumbing'),
-                _ServiceTile(icon: Icons.chair, label: 'Furniture'),
+                _ServiceTile(
+                  icon: Icons.directions_car,
+                  label: 'Transport',
+                  category: ServiceCategory.transport,
+                ),
+                _ServiceTile(
+                  icon: Icons.chair,
+                  label: 'Furniture',
+                  category: ServiceCategory.furniture,
+                ),
+                _ServiceTile(
+                  icon: Icons.devices,
+                  label: 'Electronics',
+                  category: ServiceCategory.electronics,
+                ),
+                _ServiceTile(
+                  icon: Icons.kitchen,
+                  label: 'Kitchen',
+                  category: ServiceCategory.kitchen,
+                ),
               ],
             ),
             const SizedBox(height: 24),
@@ -109,8 +126,13 @@ class HomeScreen extends ConsumerWidget {
 class _ServiceTile extends StatelessWidget {
   final IconData icon;
   final String label;
+  final ServiceCategory category;
 
-  const _ServiceTile({required this.icon, required this.label});
+  const _ServiceTile({
+    required this.icon,
+    required this.label,
+    required this.category,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +141,8 @@ class _ServiceTile extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () {
-          // TODO: Navigate to booking
+          final encodedCategory = Uri.encodeComponent(category.name);
+          context.push('/category/$encodedCategory');
         },
         child: Center(
           child: Column(

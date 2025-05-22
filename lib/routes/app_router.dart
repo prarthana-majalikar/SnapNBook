@@ -19,6 +19,7 @@ import '../shared/layout/technician_scaffold.dart';
 import '../features/auth/confirm_signup_screen.dart';
 import '../features/user/booking/booking_detail_screen.dart';
 import '../features/user/booking/payment_screen.dart';
+import '../features/user/home/category_item_list_screen.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -91,6 +92,13 @@ class AppRouter {
           final bookingId = state.pathParameters['bookingId']!;
           final amount = state.pathParameters['amount']!;
           return PaymentScreen(bookingId: bookingId, amount: amount);
+        },
+      ),
+      GoRoute(
+        path: '/category/:categoryName',
+        builder: (context, state) {
+          final categoryName = state.pathParameters['categoryName']!;
+          return CategoryItemListScreen(categoryName: categoryName);
         },
       ),
 
