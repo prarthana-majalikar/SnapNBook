@@ -61,6 +61,13 @@ class AppRouter {
             path: '/profile',
             builder: (context, state) => const ProfileScreen(),
           ),
+          GoRoute(
+            path: '/category/:categoryName',
+            builder: (context, state) {
+              final categoryName = state.pathParameters['categoryName']!;
+              return CategoryItemListScreen(categoryName: categoryName);
+            },
+          ),
         ],
       ),
 
@@ -97,13 +104,6 @@ class AppRouter {
           final bookingId = state.pathParameters['bookingId']!;
           final amount = state.pathParameters['amount']!;
           return PaymentScreen(bookingId: bookingId, amount: amount);
-        },
-      ),
-      GoRoute(
-        path: '/category/:categoryName',
-        builder: (context, state) {
-          final categoryName = state.pathParameters['categoryName']!;
-          return CategoryItemListScreen(categoryName: categoryName);
         },
       ),
 

@@ -32,7 +32,7 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
 
             // Scan Button
             PrimaryButton(
@@ -95,8 +95,8 @@ class HomeScreen extends ConsumerWidget {
               children: const [
                 _ServiceTile(
                   icon: Icons.directions_car,
-                  label: 'Transport',
-                  category: ServiceCategory.transport,
+                  label: 'Vehicles',
+                  category: ServiceCategory.vehicle,
                 ),
                 _ServiceTile(
                   icon: Icons.chair,
@@ -110,8 +110,8 @@ class HomeScreen extends ConsumerWidget {
                 ),
                 _ServiceTile(
                   icon: Icons.kitchen,
-                  label: 'Kitchen',
-                  category: ServiceCategory.kitchen,
+                  label: 'Kitchen Appliances',
+                  category: ServiceCategory.kitchenAppliances,
                 ),
               ],
             ),

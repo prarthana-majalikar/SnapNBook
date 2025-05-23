@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:snapnbook/shared/constants/categories.dart';
 import '../../../../state/booking_provider.dart';
 import '../../../shared/widgets/primary_button.dart';
 import 'package:http/http.dart' as http;
@@ -48,7 +49,10 @@ class _ConfirmBookingSheetState extends ConsumerState<ConfirmBookingSheet> {
                 "Not selected",
           ),
           _InfoRow(label: "Time", value: selectedTime ?? "Not selected"),
-          _InfoRow(label: "Appliance", value: appliance),
+          _InfoRow(
+            label: "Appliance",
+            value: getDisplayName(appliance) ?? appliance,
+          ),
 
           const SizedBox(height: 20),
           PrimaryButton(
@@ -84,9 +88,10 @@ class _ConfirmBookingSheetState extends ConsumerState<ConfirmBookingSheet> {
                 // 2. Construct request body
                 final bookingBody = {
                   "userId": user!.userId,
-                  "appliance": appliance,
+                  "appliance": getDisplayName(appliance),
                   "preferredTime": isoTime,
-                  "issue": "Issue description",
+                  "issue": "",
+                  "bookingAmount": getPrice(appliance),
                 };
 
                 // 3. Make API call
