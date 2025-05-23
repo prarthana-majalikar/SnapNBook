@@ -126,9 +126,9 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                   booking['assignedTechId'] != null &&
                   booking['assignedTechId'] != 'None';
 
-              if (status == 'ASSIGNED' && hasAssignedTech) {
+              if (status == 'ASSIGNED') {
                 statusLabel = 'ASSIGNED';
-              } else if (status == 'ACCEPTED') {
+              } else if (status == 'ACCEPTED' && hasAssignedTech) {
                 statusLabel = 'ACCEPTED';
               } else if (status == 'COMPLETED') {
                 statusLabel = 'COMPLETED';
