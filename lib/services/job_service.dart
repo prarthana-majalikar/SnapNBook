@@ -48,15 +48,28 @@ class JobService {
     return response.statusCode == 200;
   }
 
-  static Future<bool> cancelBooking(
+  static Future<bool> cancelBooking(String bookingId) async {
+    final response = await http.post(
+      Uri.parse(
+        'https://nl9w2g6wra.execute-api.us-east-1.amazonaws.com/production/bookings/cancelBooking',
+      ),
+      body: jsonEncode({'bookingId': bookingId}),
+      //TODO: should cancel with just the bookingId TEST when API is ready
+      headers: {'Content-Type': 'application/json'},
+    );
+    return response.statusCode == 200;
+  }
+
+  static Future<bool> declineBooking(
     String bookingId,
     String technicianId,
   ) async {
     final response = await http.post(
       Uri.parse(
-        'https://nl9w2g6wra.execute-api.us-east-1.amazonaws.com/production/bookings/cancelBooking',
+        'https://nl9w2g6wra.execute-api.us-east-1.amazonaws.com/production/bookings/cancelBooking', //TODO update correct api
       ),
       body: jsonEncode({'bookingId': bookingId, 'technicianId': technicianId}),
+      //TODO:  TEST when API is ready
       headers: {'Content-Type': 'application/json'},
     );
     return response.statusCode == 200;

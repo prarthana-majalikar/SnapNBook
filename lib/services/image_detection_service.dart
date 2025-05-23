@@ -16,6 +16,7 @@ Future<String?> detectFirstObjectFromImage(File imageFile) async {
     final Map<String, dynamic> json = jsonDecode(responseData);
 
     final List detections = json['detections'] ?? [];
+    print('[DEBUG] detections: $detections');
 
     if (detections.isNotEmpty) {
       return detections[0]['class_name'] as String;

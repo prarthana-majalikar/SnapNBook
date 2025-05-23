@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:go_router/go_router.dart';
+import '../../../services/job_service.dart';
 
 class BookingDetailScreen extends StatelessWidget {
   final Map<String, dynamic> booking;
@@ -148,6 +149,36 @@ class BookingDetailScreen extends StatelessWidget {
                       );
                     },
                   ),
+
+                // Only render if technicianId is not assigned yet
+                if (status != 'COMPLETED' && status != 'ACCEPTED') ...[
+                  const SizedBox(height: 24),
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 16),
+                      child: ElevatedButton.icon(
+                        icon: const Icon(Icons.cancel),
+                        label: const Text("Cancel Booking"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                        ),
+                        onPressed: () async {
+                          bool success = await JobService.cancelBooking(
+                            booking['bookingId'],
+                          );
+                          if (!success) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Failed to cancel booking.'),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),

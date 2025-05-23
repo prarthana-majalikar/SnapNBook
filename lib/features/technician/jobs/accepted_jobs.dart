@@ -13,7 +13,8 @@ class AcceptedJobsScreen extends StatefulWidget {
 
 class _AcceptedJobsScreenState extends State<AcceptedJobsScreen> {
   bool _isLoading = true;
-  List<Map<String, dynamic>> _acceptedJobs = [];
+  List<Map<String, dynamic>> _incompleteJobs = [];
+  List<Map<String, dynamic>> _completedJobs = [];
 
   @override
   void initState() {
@@ -26,20 +27,33 @@ class _AcceptedJobsScreenState extends State<AcceptedJobsScreen> {
     try {
       final jobs = await JobService.fetchJobsForTechnician(widget.technicianId);
       setState(() {
-        _acceptedJobs =
+        _incompleteJobs =
             jobs
                 .where(
                   (job) =>
                       job['status'] == 'ACCEPTED' &&
-                      job['assignedTechId'] == widget.technicianId,
+                      job['assignedTechId'] == widget.technicianId &&
+                      job['isCompleted'] != true,
                 )
                 .toList();
+
+        _completedJobs =
+            jobs
+                .where(
+                  (job) =>
+                      job['status'] == 'ACCEPTED' &&
+                      job['assignedTechId'] == widget.technicianId &&
+                      job['isCompleted'] == true,
+                )
+                .toList();
+
         _isLoading = false;
       });
     } catch (e) {
       print('[AcceptedJobsScreen] fetch error: $e');
       setState(() {
-        _acceptedJobs = [];
+        _incompleteJobs = [];
+        _completedJobs = [];
         _isLoading = false;
       });
     }
@@ -55,48 +69,143 @@ class _AcceptedJobsScreenState extends State<AcceptedJobsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Padding(
-          padding: EdgeInsets.fromLTRB(16, 20, 16, 8),
-          child: Text(
-            'Accepted Jobs',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
+    return Scaffold(
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title with better spacing and style
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 10),
+              child: Text(
+                'Accepted Jobs',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
-          ),
+            Expanded(
+              child:
+                  _isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : (_incompleteJobs.isEmpty && _completedJobs.isEmpty)
+                      ?
+                      // Center(
+                      //   child: Padding(
+                      //     padding: const EdgeInsets.all(32),
+                      //     child: Column(
+                      //       mainAxisAlignment: MainAxisAlignment.center,
+                      //       children: [
+                      //         Icon(
+                      //           Icons.assignment_turned_in_outlined,
+                      //           size: 64,
+                      //           color: Colors.grey.shade400,
+                      //         ),
+                      //         const SizedBox(height: 16),
+                      //         Text(
+                      //           'No accepted jobs yet',
+                      //           style: Theme.of(context).textTheme.titleMedium
+                      //               ?.copyWith(color: Colors.grey.shade700),
+                      //         ),
+                      //         const SizedBox(height: 8),
+                      //         Text(
+                      //           'You’ll see jobs here when you accept them.',
+                      //           style: Theme.of(context).textTheme.bodyMedium
+                      //               ?.copyWith(color: Colors.grey.shade500),
+                      //           textAlign: TextAlign.center,
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // )
+                      // _buildEmptyState()
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(32),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.assignment_turned_in_outlined,
+                                size: 64,
+                                color: Colors.grey.shade400,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'No jobs scheduled today',
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(color: Colors.grey.shade700),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'You’ll see your jobs here once accepted.',
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(color: Colors.grey.shade500),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                      :
+                      // ListView.builder(
+                      //   padding: const EdgeInsets.symmetric(
+                      //     horizontal: 14,
+                      //     vertical: 8,
+                      //   ),
+                      //   itemCount: _acceptedJobs.length,
+                      //   itemBuilder: (context, index) {
+                      //     final job = _acceptedJobs[index];
+                      //     return AcceptedJobCard(
+                      //       job: job,
+                      //       technicianId: widget.technicianId,
+                      //       onComplete: _markAsCompleted,
+                      //     );
+                      //   },
+                      // ),
+                      SingleChildScrollView(
+                        padding: const EdgeInsets.all(14),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (_incompleteJobs.isNotEmpty) ...[
+                              Text(
+                                'Pending Jobs',
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 8),
+                              ..._incompleteJobs.map(
+                                (job) => AcceptedJobCard(
+                                  job: job,
+                                  technicianId: widget.technicianId,
+                                  onComplete: _markAsCompleted,
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                            ],
+                            if (_completedJobs.isNotEmpty) ...[
+                              Text(
+                                'Completed Jobs',
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 8),
+                              ..._completedJobs.map(
+                                (job) => AcceptedJobCard(
+                                  job: job,
+                                  technicianId: widget.technicianId,
+                                  onComplete: _markAsCompleted,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+            ),
+          ],
         ),
-        Expanded(
-          child:
-              _isLoading
-                  ? const Center(child: CircularProgressIndicator())
-                  : _acceptedJobs.isEmpty
-                  ? const Center(
-                    child: Text(
-                      'No accepted jobs.',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
-                  )
-                  : ListView.builder(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
-                    ),
-                    itemCount: _acceptedJobs.length,
-                    itemBuilder: (context, index) {
-                      final job = _acceptedJobs[index];
-                      return AcceptedJobCard(
-                        job: job,
-                        technicianId: widget.technicianId,
-                        onComplete: _markAsCompleted,
-                      );
-                    },
-                  ),
-        ),
-      ],
+      ),
     );
   }
 }

@@ -52,7 +52,7 @@ class HomeScreen extends ConsumerWidget {
                   //     Platform.isAndroid
                   //         ? ImageSource.camera
                   //         : ImageSource.gallery,
-                  source: ImageSource.gallery,
+                  source: ImageSource.camera,
                 );
 
                 if (pickedFile == null) {

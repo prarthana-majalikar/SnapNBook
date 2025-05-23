@@ -49,40 +49,44 @@ class AssignedJobCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                ElevatedButton.icon(
+                FilledButton.icon(
                   onPressed: onAccept,
-                  icon: const Icon(Icons.check, size: 18),
+                  icon: const Icon(Icons.check_circle_outline, size: 20),
                   label: const Text('Accept'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.black,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.green.shade600,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
+                      horizontal: 24,
                       vertical: 12,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    elevation: 3,
                     textStyle: const TextStyle(fontWeight: FontWeight.w600),
+                    elevation: 4,
                   ),
                 ),
                 const SizedBox(width: 12),
-                ElevatedButton.icon(
+                OutlinedButton.icon(
                   onPressed: onCancel,
-                  icon: const Icon(Icons.cancel, size: 18),
+                  icon: const Icon(
+                    Icons.cancel_outlined,
+                    size: 20,
+                    color: Colors.white,
+                  ),
                   label: const Text('Decline'),
-                  style: ElevatedButton.styleFrom(
+                  style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.red),
                     backgroundColor: Colors.red,
-                    foregroundColor: Colors.black,
+                    foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
+                      horizontal: 22,
                       vertical: 12,
                     ),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    elevation: 3,
                     textStyle: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
