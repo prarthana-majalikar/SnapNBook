@@ -35,7 +35,7 @@ class AppRouter {
       if (session == null && !isPublicPage) return '/login';
 
       if (session != null && (path == '/login' || path == '/signup')) {
-        return session.isTechnician ? '/technician-all-jobs' : '/';
+        return session.isTechnician ? '/technician-all-jobs' : '/home';
       }
       return null;
     },
@@ -44,7 +44,7 @@ class AppRouter {
       ShellRoute(
         builder: (context, state, child) => UserScaffold(child: child),
         routes: [
-          GoRoute(path: '/', builder: (context, state) => HomeScreen()),
+          GoRoute(path: '/home', builder: (context, state) => HomeScreen()),
           GoRoute(
             path: '/bookings',
             builder: (context, state) => const BookingListScreen(),

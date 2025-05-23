@@ -6,7 +6,7 @@ class UserScaffold extends StatelessWidget {
 
   const UserScaffold({super.key, required this.child});
 
-  static const tabs = ['/', '/bookings', '/profile'];
+  static const tabs = ['/home', '/bookings', '/profile'];
 
   @override
   Widget build(BuildContext context) {
@@ -18,10 +18,9 @@ class UserScaffold extends StatelessWidget {
     return Scaffold(
       body: child,
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         currentIndex: currentIndex,
-        onTap: (index) {
-          context.go(tabs[index]);
-        },
+        onTap: (index) => context.go(tabs[index]),
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(

@@ -127,7 +127,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         if (!regex.hasMatch(value))
                           return 'Invalid format (MM/YY)';
 
-                        final parts = value.split('/');
+                        final parts = value.split('/home');
                         final int enteredMonth = int.parse(parts[0]);
                         final int enteredYear = int.parse(
                           '20${parts[1]}',

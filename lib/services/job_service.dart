@@ -2,8 +2,11 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class JobService {
-  static Future<List<Map<String, dynamic>>> fetchJobsForTechnician(String technicianId) async {
-    final url = 'https://nl9w2g6wra.execute-api.us-east-1.amazonaws.com/production/getBookingsofUserOrTechnician/$technicianId';
+  static Future<List<Map<String, dynamic>>> fetchJobsForTechnician(
+    String technicianId,
+  ) async {
+    final url =
+        'https://nl9w2g6wra.execute-api.us-east-1.amazonaws.com/production/getBookingsofUserOrTechnician/$technicianId';
     print('[JobService] Fetching jobs from: $url');
 
     final response = await http.get(
@@ -31,27 +34,42 @@ class JobService {
     }
   }
 
-  static Future<bool> acceptBooking(String bookingId, String technicianId) async {
+  static Future<bool> acceptBooking(
+    String bookingId,
+    String technicianId,
+  ) async {
     final response = await http.post(
-      Uri.parse('https://nl9w2g6wra.execute-api.us-east-1.amazonaws.com/production/bookings/acceptBooking'),
+      Uri.parse(
+        'https://nl9w2g6wra.execute-api.us-east-1.amazonaws.com/production/bookings/acceptBooking',
+      ),
       body: jsonEncode({'bookingId': bookingId, 'technicianId': technicianId}),
       headers: {'Content-Type': 'application/json'},
     );
     return response.statusCode == 200;
   }
 
-  static Future<bool> cancelBooking(String bookingId) async {
+  static Future<bool> cancelBooking(
+    String bookingId,
+    String technicianId,
+  ) async {
     final response = await http.post(
-      Uri.parse('https://your-api.com/bookings/cancel'), // Update if cancel API available
-      body: jsonEncode({'bookingId': bookingId}),
+      Uri.parse(
+        'https://nl9w2g6wra.execute-api.us-east-1.amazonaws.com/production/bookings/cancelBooking',
+      ),
+      body: jsonEncode({'bookingId': bookingId, 'technicianId': technicianId}),
       headers: {'Content-Type': 'application/json'},
     );
     return response.statusCode == 200;
   }
 
-  static Future<bool> markBookingCompleted(String bookingId, String technicianId) async {
+  static Future<bool> markBookingCompleted(
+    String bookingId,
+    String technicianId,
+  ) async {
     final response = await http.post(
-      Uri.parse('https://nl9w2g6wra.execute-api.us-east-1.amazonaws.com/production/bookings/markCompleted'),
+      Uri.parse(
+        'https://nl9w2g6wra.execute-api.us-east-1.amazonaws.com/production/bookings/markCompleted',
+      ),
       body: jsonEncode({'bookingId': bookingId, 'technicianId': technicianId}),
       headers: {'Content-Type': 'application/json'},
     );

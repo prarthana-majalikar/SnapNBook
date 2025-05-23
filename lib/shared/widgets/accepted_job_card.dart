@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class AcceptedJobCard extends StatefulWidget {
   final Map<String, dynamic> job;
@@ -23,10 +24,11 @@ class _AcceptedJobCardState extends State<AcceptedJobCard> {
   @override
   void initState() {
     super.initState();
-    final fee = widget.job['fees'];
+    final fee = widget.job['bookingAmount'];
     feeController = TextEditingController(
       text: fee != null ? fee.toString() : '',
     );
+    print('[DEBUG] Initial fee: ${feeController.text}');
   }
 
   @override
@@ -93,7 +95,11 @@ class _AcceptedJobCardState extends State<AcceptedJobCard> {
             if (issue.trim().isNotEmpty)
               _buildDetailRow(Icons.report_problem_outlined, 'Issue', issue),
             _buildDetailRow(Icons.location_on_outlined, 'Address', address),
-            _buildDetailRow(Icons.access_time, 'Time', time),
+            _buildDetailRow(
+              Icons.access_time,
+              "Date & Time",
+              _formatDateTime(time),
+            ),
 
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -131,9 +137,6 @@ class _AcceptedJobCardState extends State<AcceptedJobCard> {
                       onPressed: () {
                         if (feeController.text.trim().isNotEmpty) {
                           setState(() => isFeeConfirmed = true);
-                          // ScaffoldMessenger.of(context).showSnackBar(
-                          //   const SnackBar(content: Text('Fee confirmed')),
-                          // );
                         }
                       },
                       icon: const Icon(Icons.check_circle, color: Colors.green),
@@ -157,7 +160,7 @@ class _AcceptedJobCardState extends State<AcceptedJobCard> {
                       isFeeConfirmed
                           ? () => widget.onComplete(bookingId)
                           : null,
-                  icon: const Icon(Icons.check),
+                  icon: const Icon(Icons.check_circle),
                   label: const Text("Mark as Completed"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor:
@@ -182,4 +185,10 @@ class _AcceptedJobCardState extends State<AcceptedJobCard> {
       ),
     );
   }
+}
+
+String _formatDateTime(String isoDate) {
+  final dt = DateTime.tryParse(isoDate);
+  if (dt == null) return 'N/A';
+  return DateFormat.yMMMMd().add_jm().format(dt);
 }

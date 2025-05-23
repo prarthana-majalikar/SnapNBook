@@ -14,8 +14,16 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false, // Removes default hamburger
+        // leading: Padding(
+        //   padding: const EdgeInsets.all(8.0),
+        //   child: Image.asset(
+        //     'assets/logo.png', // <- Replace with your logo path
+        //     fit: BoxFit.contain,
+        //   ),
+        // ),
         title: const Text('SnapNBook'),
-        actions: [IconButton(icon: const Icon(Icons.menu), onPressed: () {})],
+        centerTitle: true, // optional: center the title
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

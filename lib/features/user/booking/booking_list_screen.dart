@@ -91,7 +91,7 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                     const SizedBox(height: 30),
                     ElevatedButton.icon(
                       onPressed: () {
-                        context.go('/'); // change route as needed
+                        context.go('/home'); // change route as needed
                       },
                       icon: const Icon(Icons.home),
                       label: const Text('Explore Services'),

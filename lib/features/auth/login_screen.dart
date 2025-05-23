@@ -93,7 +93,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   if (role == 'technician') {
                     context.go('/technician-home');
                   } else {
-                    context.go('/');
+                    context.go('/home');
                   }
                 } else {
                   final message = response?['error'] ?? 'Login failed';

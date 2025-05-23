@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class AssignedJobCard extends StatelessWidget {
   final String title;
@@ -37,9 +38,13 @@ class AssignedJobCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             _infoRow(Icons.build_circle, "Appliance: $appliance"),
-            _infoRow(Icons.error_outline, "Issue: $issue"),
+            if (issue.isNotEmpty)
+              _infoRow(Icons.error_outline, "Issue: $issue"),
             _infoRow(Icons.location_on_outlined, "Address: $address"),
-            _infoRow(Icons.access_time_outlined, "Time: $time"),
+            _infoRow(
+              Icons.access_time_outlined,
+              "Date & Time: ${_formatDateTime(time)}",
+            ),
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -49,16 +54,36 @@ class AssignedJobCard extends StatelessWidget {
                   icon: const Icon(Icons.check, size: 18),
                   label: const Text('Accept'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green.shade600,
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 3,
+                    textStyle: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
                 const SizedBox(width: 12),
-                OutlinedButton.icon(
+                ElevatedButton.icon(
                   onPressed: onCancel,
                   icon: const Icon(Icons.cancel, size: 18),
                   label: const Text('Decline'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.redAccent,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 3,
+                    textStyle: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                 ),
               ],
@@ -81,4 +106,10 @@ class AssignedJobCard extends StatelessWidget {
       ),
     );
   }
+}
+
+String _formatDateTime(String isoDate) {
+  final dt = DateTime.tryParse(isoDate);
+  if (dt == null) return 'N/A';
+  return DateFormat.yMMMMd().add_jm().format(dt);
 }
