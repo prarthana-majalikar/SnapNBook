@@ -88,46 +88,82 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 const SizedBox(height: 24),
 
                 // 📸 Scan Button
-                PrimaryButton(
-                  label: '📸 Scan Appliance',
-                  onPressed: () async {
-                    final picker = ImagePicker();
-                    final pickedFile = await picker.pickImage(
-                      source: ImageSource.camera,
-                    );
-
-                    if (pickedFile == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('No image selected')),
+                Center(
+                  child: ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 16,
+                        horizontal: 24,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      elevation: 6,
+                      shadowColor: Colors.deepPurpleAccent,
+                    ),
+                    icon: const Icon(Icons.camera_alt, size: 24),
+                    label: const Text(
+                      'Scan Appliance',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    onPressed: () async {
+                      final picker = ImagePicker();
+                      final pickedFile = await picker.pickImage(
+                        source: ImageSource.camera,
                       );
-                      return;
-                    }
 
-                    try {
-                      final objectName = await detectFirstObjectFromImage(
-                        File(pickedFile.path),
-                      );
-
-                      if (context.mounted) {
-                        if (objectName != null) {
-                          context.push(
-                            '/appliance-selection/${Uri.encodeComponent(capitalize(objectName))}',
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('No object detected')),
-                          );
-                        }
+                      if (pickedFile == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('No image selected')),
+                        );
+                        return;
                       }
-                    } catch (e) {
-                      print('Error: $e');
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Failed to detect object'),
-                        ),
+                      // Show loading dialog
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder:
+                            (context) => const Center(
+                              child: CircularProgressIndicator(),
+                            ),
                       );
-                    }
-                  },
+
+                      try {
+                        final objectName = await detectFirstObjectFromImage(
+                          File(pickedFile.path),
+                        );
+
+                        if (!context.mounted) return;
+
+                        // First pop the loading dialog
+                        context.pop();
+
+                        if (context.mounted) {
+                          if (objectName != null) {
+                            context.push(
+                              '/appliance-selection/${Uri.encodeComponent(capitalize(objectName))}',
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('No object detected'),
+                              ),
+                            );
+                          }
+                        }
+                      } catch (e) {
+                        print('Error: $e');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Failed to detect object'),
+                          ),
+                        );
+                      }
+                    },
+                  ),
                 ),
                 const SizedBox(height: 24),
 
@@ -182,7 +218,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 if (items.isEmpty) return const SizedBox();
                 return Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: const Color.fromARGB(255, 204, 184, 241),
                     border: Border.all(color: Colors.grey),
                     borderRadius: BorderRadius.circular(8),
                     boxShadow: [
