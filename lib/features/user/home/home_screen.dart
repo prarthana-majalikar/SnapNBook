@@ -2,125 +2,217 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:snapnbook/state/booking_provider.dart';
 import '../../../shared/widgets/primary_button.dart';
 import '../../../services/image_detection_service.dart';
 import 'package:go_router/go_router.dart';
 import "../../../shared/constants/categories.dart";
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  final ValueNotifier<List<ApplianceItem>> _filteredItems = ValueNotifier([]);
+
+  final GlobalKey _searchFieldKey = GlobalKey();
+
+  List<ApplianceItem> get allItems {
+    return categoryItems.values.expand((list) => list).toList();
+  }
+
+  void _filterItems(String query) {
+    final lowerQuery = query.toLowerCase();
+    if (lowerQuery.isEmpty) {
+      _filteredItems.value = [];
+    } else {
+      _filteredItems.value =
+          allItems
+              .where(
+                (item) => item.displayName.toLowerCase().contains(lowerQuery),
+              )
+              .toList();
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() => _filterItems(_searchController.text));
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _filteredItems.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text('SnapNBook'),
         backgroundColor: Colors.deepPurple,
         foregroundColor: Colors.white,
-        centerTitle: true, // optional: center the title
+        centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Search bar
-            TextField(
-              decoration: InputDecoration(
-                hintText: 'Search services...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 🔍 Search Bar
+                Container(
+                  key: _searchFieldKey,
+                  child: TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search services...',
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 24),
+                const SizedBox(height: 12),
 
-            // Scan Button
-            PrimaryButton(
-              label: '📸 Scan Appliance',
-              onPressed: () async {
-                final picker = ImagePicker();
-                final pickedFile = await picker.pickImage(
-                  // source:
-                  //     Platform.isAndroid
-                  //         ? ImageSource.camera
-                  //         : ImageSource.gallery,
-                  source: ImageSource.camera,
-                );
+                const SizedBox(height: 24),
 
-                if (pickedFile == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('No image selected')),
-                  );
-                  return;
-                }
+                // 📸 Scan Button
+                PrimaryButton(
+                  label: '📸 Scan Appliance',
+                  onPressed: () async {
+                    final picker = ImagePicker();
+                    final pickedFile = await picker.pickImage(
+                      source: ImageSource.camera,
+                    );
 
-                try {
-                  final objectName = await detectFirstObjectFromImage(
-                    File(pickedFile.path),
-                  );
-
-                  if (context.mounted) {
-                    if (objectName != null) {
-                      context.push(
-                        '/appliance-selection/${Uri.encodeComponent(capitalize(objectName))}',
-                      );
-                    } else {
+                    if (pickedFile == null) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('No object detected')),
+                        const SnackBar(content: Text('No image selected')),
+                      );
+                      return;
+                    }
+
+                    try {
+                      final objectName = await detectFirstObjectFromImage(
+                        File(pickedFile.path),
+                      );
+
+                      if (context.mounted) {
+                        if (objectName != null) {
+                          context.push(
+                            '/appliance-selection/${Uri.encodeComponent(capitalize(objectName))}',
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('No object detected')),
+                          );
+                        }
+                      }
+                    } catch (e) {
+                      print('Error: $e');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Failed to detect object'),
+                        ),
                       );
                     }
-                  }
-                } catch (e) {
-                  print('Error: $e');
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Failed to detect object')),
-                  );
-                }
-              },
-            ),
-            const SizedBox(height: 24),
+                  },
+                ),
+                const SizedBox(height: 24),
 
-            // Categories
-            const Text(
-              'Service Categories',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            GridView.count(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              children: const [
-                _ServiceTile(
-                  icon: Icons.directions_car,
-                  label: 'Vehicles',
-                  category: ServiceCategory.vehicle,
+                // Categories
+                const Text(
+                  'Service Categories',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                _ServiceTile(
-                  icon: Icons.chair,
-                  label: 'Furniture',
-                  category: ServiceCategory.furniture,
+                const SizedBox(height: 12),
+                GridView.count(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  children: const [
+                    _ServiceTile(
+                      icon: Icons.directions_car,
+                      label: 'Vehicles',
+                      category: ServiceCategory.vehicle,
+                    ),
+                    _ServiceTile(
+                      icon: Icons.chair,
+                      label: 'Furniture',
+                      category: ServiceCategory.furniture,
+                    ),
+                    _ServiceTile(
+                      icon: Icons.devices,
+                      label: 'Electronics',
+                      category: ServiceCategory.electronics,
+                    ),
+                    _ServiceTile(
+                      icon: Icons.kitchen,
+                      label: 'Kitchen Appliances',
+                      category: ServiceCategory.kitchenAppliances,
+                    ),
+                  ],
                 ),
-                _ServiceTile(
-                  icon: Icons.devices,
-                  label: 'Electronics',
-                  category: ServiceCategory.electronics,
-                ),
-                _ServiceTile(
-                  icon: Icons.kitchen,
-                  label: 'Kitchen Appliances',
-                  category: ServiceCategory.kitchenAppliances,
-                ),
+                const SizedBox(height: 24),
               ],
             ),
-            const SizedBox(height: 24),
-          ],
-        ),
+          ),
+
+          // 🔽 Suggestions overlay
+          Positioned(
+            left: 16,
+            right: 16,
+            top: 72, // Adjust depending on AppBar and padding
+            child: ValueListenableBuilder<List<ApplianceItem>>(
+              valueListenable: _filteredItems,
+              builder: (context, items, _) {
+                if (items.isEmpty) return const SizedBox();
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 6,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  constraints: BoxConstraints(maxHeight: 200),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: items.length,
+                    itemBuilder: (context, index) {
+                      final item = items[index];
+                      return ListTile(
+                        title: Text(item.displayName),
+                        onTap: () {
+                          ref.read(bookingProvider).setApplianceType(item.key);
+                          context.push('/booking');
+                        },
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
