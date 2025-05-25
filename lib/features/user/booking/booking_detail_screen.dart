@@ -139,7 +139,8 @@ class BookingDetailScreen extends StatelessWidget {
                                   ),
                                   onPressed: () {
                                     final bookingId = booking['bookingId'];
-                                    final amount = booking['fees'] ?? 100;
+                                    final amount =
+                                        booking['bookingAmount'] ?? 100;
                                     context.push('/payment/$bookingId/$amount');
                                   },
                                 ),

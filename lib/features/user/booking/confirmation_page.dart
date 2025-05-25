@@ -77,9 +77,9 @@ class ConfirmationPage extends ConsumerWidget {
                 ),
                 const SizedBox(height: 30),
                 ElevatedButton.icon(
-                  onPressed: () => context.go('/home'),
-                  icon: const Icon(Icons.home),
-                  label: const Text("Back to Home"),
+                  onPressed: () => context.go('/bookings'),
+                  icon: const Icon(Icons.calendar_today),
+                  label: const Text("Go to Bookings"),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 30,

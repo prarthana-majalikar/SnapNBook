@@ -24,7 +24,7 @@ class BookingScreen extends ConsumerWidget {
     }
 
     final now = DateTime.now();
-    final bufferTime = now.add(const Duration(hours: 1));
+    final bufferTime = now.add(const Duration(minutes: 20));
 
     // Filter available time slots
     List<String> filteredSlots =
