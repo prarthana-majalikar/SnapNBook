@@ -7,6 +7,8 @@ import '../../../shared/widgets/primary_button.dart';
 import '../../../services/image_detection_service.dart';
 import 'package:go_router/go_router.dart';
 import "../../../shared/constants/categories.dart";
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -109,6 +111,61 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+
+                    // onPressed: () async {
+                    //   final picker = ImagePicker();
+                    //   final pickedFile = await picker.pickImage(
+                    //     source: ImageSource.camera,
+                    //   );
+
+                    //   if (pickedFile == null) {
+                    //     ScaffoldMessenger.of(context).showSnackBar(
+                    //       const SnackBar(content: Text('No image selected')),
+                    //     );
+                    //     return;
+                    //   }
+                    //   // Show loading dialog
+                    //   showDialog(
+                    //     context: context,
+                    //     barrierDismissible: false,
+                    //     builder:
+                    //         (context) => const Center(
+                    //           child: CircularProgressIndicator(),
+                    //         ),
+                    //   );
+
+                    //   try {
+                    //     final objectName = await detectFirstObjectFromImage(
+                    //       File(pickedFile.path),
+                    //     );
+
+                    //     if (!context.mounted) return;
+
+                    //     // First pop the loading dialog
+                    //     context.pop();
+
+                    //     if (context.mounted) {
+                    //       if (objectName != null) {
+                    //         context.push(
+                    //           '/appliance-selection/${Uri.encodeComponent(capitalize(objectName))}',
+                    //         );
+                    //       } else {
+                    //         ScaffoldMessenger.of(context).showSnackBar(
+                    //           const SnackBar(
+                    //             content: Text('No object detected'),
+                    //           ),
+                    //         );
+                    //       }
+                    //     }
+                    //   } catch (e) {
+                    //     print('Error: $e');
+                    //     ScaffoldMessenger.of(context).showSnackBar(
+                    //       const SnackBar(
+                    //         content: Text('Failed to detect object'),
+                    //       ),
+                    //     );
+                    //   }
+                    // },
                     onPressed: () async {
                       final picker = ImagePicker();
                       final pickedFile = await picker.pickImage(
@@ -121,7 +178,40 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         );
                         return;
                       }
-                      // Show loading dialog
+
+                      // ✅ Step 1: Save the image to laptop (local dev folder)
+                      try {
+                        final appDir = Directory(
+                          '/storage/emulated/0/Download',
+                        ); // e.g., on your machine
+                        final savedImagePath = p.join(
+                          appDir.path,
+                          'scanned_${DateTime.now().millisecondsSinceEpoch}.jpg',
+                        );
+
+                        final savedImage = await File(
+                          pickedFile.path,
+                        ).copy(savedImagePath);
+                        print('✅ Image saved to: ${savedImage.path}');
+
+                        // Optional: Show confirmation
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              'Image saved to laptop: ${savedImage.path}',
+                            ),
+                          ),
+                        );
+                      } catch (e) {
+                        print('Error saving image: $e');
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('❌ Failed to save image'),
+                          ),
+                        );
+                      }
+
+                      // ✅ Step 2: Proceed with detection logic
                       showDialog(
                         context: context,
                         barrierDismissible: false,
@@ -135,31 +225,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         final objectName = await detectFirstObjectFromImage(
                           File(pickedFile.path),
                         );
-
                         if (!context.mounted) return;
-
-                        // First pop the loading dialog
                         context.pop();
 
-                        if (context.mounted) {
-                          if (objectName != null) {
-                            context.push(
-                              '/appliance-selection/${Uri.encodeComponent(capitalize(objectName))}',
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('No object detected'),
-                              ),
-                            );
-                          }
+                        if (objectName != null) {
+                          context.push(
+                            '/appliance-selection/${Uri.encodeComponent(capitalize(objectName))}',
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('No object detected')),
+                          );
                         }
                       } catch (e) {
-                        print('Error: $e');
+                        print('Detection error: $e');
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Failed to detect object'),
-                          ),
+                          const SnackBar(content: Text('Detection failed')),
                         );
                       }
                     },
