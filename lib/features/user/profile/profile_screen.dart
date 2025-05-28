@@ -22,7 +22,9 @@ class ProfileScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              session != null ? '${session.firstName} ${session.lastName}' : 'User',
+              session != null
+                  ? '${session.firstName} ${session.lastName}'
+                  : 'User',
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -39,24 +41,33 @@ class ProfileScreen extends ConsumerWidget {
 
             // Role-based bookings tile
             session?.isTechnician == true
-                ? ListTile(
-                    leading: const Icon(Icons.assignment_turned_in),
-                    title: const Text("Assigned Jobs"),
-                    onTap: () => context.push('/assigned-jobs'),
-                  )
+                ? Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.assignment_turned_in),
+                      title: const Text("Assigned Jobs"),
+                      onTap: () => context.push('/assigned-jobs'),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.history),
+                      title: const Text("Service History"),
+                      onTap: () => context.push('/technician-all-jobs'),
+                    ),
+                  ],
+                )
                 : ListTile(
-                    leading: const Icon(Icons.history),
-                    title: const Text("My Bookings"),
-                    onTap: () => context.push('/bookings'),
-                  ),
+                  leading: const Icon(Icons.history),
+                  title: const Text("My Bookings"),
+                  onTap: () => context.push('/bookings'),
+                ),
 
-            const Divider(),
+            // const Divider(),
             ListTile(
               leading: const Icon(Icons.settings),
               title: const Text("Settings"),
               onTap: () => context.push('/edit-profile'),
             ),
-            const Divider(),
+            // const Divider(),
             ListTile(
               leading: const Icon(Icons.logout),
               title: const Text("Logout"),

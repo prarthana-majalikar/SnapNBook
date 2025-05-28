@@ -36,6 +36,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   void _signup() async {
     final isValid = _formKey.currentState?.validate() ?? false;
     if (!isValid) return;
+    print('[DEBUG] Skill categories: $skillCategories');
 
     if (_selectedRole == 'technician' && _selectedSkills.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
