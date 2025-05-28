@@ -61,6 +61,7 @@ class _ConfirmBookingSheetState extends ConsumerState<ConfirmBookingSheet> {
               print('[DEBUG] Confirm Booking button pressed');
               try {
                 final appliance = provider.applianceType ?? 'Unknown';
+                final issue = provider.issueDescription ?? '';
                 final date = provider.selectedDate;
                 final time = provider.selectedTime;
 
@@ -86,11 +87,12 @@ class _ConfirmBookingSheetState extends ConsumerState<ConfirmBookingSheet> {
                 final isoTime = dateTime.toIso8601String();
 
                 // 2. Construct request body
+               
                 final bookingBody = {
                   "userId": user!.userId,
-                  "appliance": getDisplayName(appliance),
+                  "appliance": appliance,
                   "preferredTime": isoTime,
-                  "issue": "",
+                  "issue": issue,
                   "bookingAmount": getPrice(appliance),
                 };
 

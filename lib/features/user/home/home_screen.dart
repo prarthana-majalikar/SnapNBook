@@ -8,6 +8,7 @@ import '../../../services/image_detection_service.dart';
 import 'package:go_router/go_router.dart';
 import "../../../shared/constants/categories.dart";
 
+
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -84,7 +85,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-
                 const SizedBox(height: 24),
 
                 // 📸 Scan Button
@@ -121,44 +121,42 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         );
                         return;
                       }
-                      // Show loading dialog
+
                       showDialog(
                         context: context,
                         barrierDismissible: false,
-                        builder:
-                            (context) => const Center(
-                              child: CircularProgressIndicator(),
-                            ),
+                        builder: (context) => const Center(
+                          child: CircularProgressIndicator(),
+                        ),
                       );
 
                       try {
-                        final objectName = await detectFirstObjectFromImage(
+                        final result = await detectFirstObjectFromImage(
                           File(pickedFile.path),
                         );
 
                         if (!context.mounted) return;
-
-                        // First pop the loading dialog
                         context.pop();
 
-                        if (context.mounted) {
-                          if (objectName != null) {
-                            context.push(
-                              '/appliance-selection/${Uri.encodeComponent(capitalize(objectName))}',
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('No object detected'),
-                              ),
-                            );
-                          }
+                        final appliance = result?['appliance'];
+                        final issue = result?['issue'];
+
+                        if (appliance != null && issue != null) {
+                          context.push(
+                            '/appliance-selection?appliance=${Uri.encodeComponent(appliance)}&issue=${Uri.encodeComponent(issue)}',
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Could not detect appliance or issue'),
+                            ),
+                          );
                         }
                       } catch (e) {
                         print('Error: $e');
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Failed to detect object'),
+                            content: Text('Failed to detect appliance'),
                           ),
                         );
                       }
@@ -211,7 +209,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           Positioned(
             left: 16,
             right: 16,
-            top: 72, // Adjust depending on AppBar and padding
+            top: 72,
             child: ValueListenableBuilder<List<ApplianceItem>>(
               valueListenable: _filteredItems,
               builder: (context, items, _) {

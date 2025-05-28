@@ -3,8 +3,12 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:snapnbook/config.dart';
 
-Future<String?> detectFirstObjectFromImage(File imageFile) async {
-  final uri = Uri.parse(AppConfig.objectDetectionUrl);
+import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+
+Future<Map<String, String>?> detectFirstObjectFromImage(File imageFile) async {
+  final uri = Uri.parse('http://54.80.90.249:8000/analyze');
 
   var request = http.MultipartRequest('POST', uri)
     ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
@@ -15,11 +19,14 @@ Future<String?> detectFirstObjectFromImage(File imageFile) async {
     final responseData = await response.stream.bytesToString();
     final Map<String, dynamic> json = jsonDecode(responseData);
 
-    final List detections = json['detections'] ?? [];
-    print('[DEBUG] detections: $detections');
+    final appliance = json['appliance'] as String?;
+    final issue = json['issue'] as String?;
 
-    if (detections.isNotEmpty) {
-      return detections[0]['class_name'] as String;
+    if (appliance != null && issue != null) {
+      return {
+        'appliance': appliance,
+        'issue': issue,
+      };
     } else {
       return null;
     }

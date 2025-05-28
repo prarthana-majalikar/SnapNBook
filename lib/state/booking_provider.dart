@@ -5,6 +5,15 @@ class BookingProvider extends ChangeNotifier {
   DateTime? selectedDate;
   String? selectedTime;
   String? applianceType;
+  String? _issueDescription;
+
+  void setIssueDescription(String? issue) {
+    _issueDescription = issue;
+    notifyListeners(); // only if you're using ChangeNotifier
+  }
+
+String? get issueDescription => _issueDescription;
+
 
   void setApplianceType(String appliance) {
     applianceType = appliance;

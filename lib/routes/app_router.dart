@@ -86,12 +86,15 @@ class AppRouter {
 
       // ✅ BOOKING FLOW
       GoRoute(
-        path: '/appliance-selection/:detected',
+        path: '/appliance-selection',
         builder: (context, state) {
-          final detected = state.pathParameters['detected'] ?? 'unknown';
-          return ApplianceSelectionScreen(detectedObject: detected);
+          return ApplianceSelectionScreen(
+            appliance: state.uri.queryParameters['appliance'],
+            issue: state.uri.queryParameters['issue'],
+          );
         },
       ),
+
       GoRoute(path: '/booking', builder: (context, state) => BookingScreen()),
       GoRoute(
         path: '/confirmation/:bookingId',

@@ -60,11 +60,11 @@ String? getDisplayName(String key) {
   return null;
 }
 
-int? getPrice(String key) {
+int getPrice(String key) {
   for (var items in categoryItems.values) {
     for (var item in items) {
       if (item.key == key.toLowerCase()) return item.price;
     }
   }
-  return null;
+  return 50; // Default price if not found
 }
