@@ -30,9 +30,10 @@ class AuthService {
       if (res.statusCode == 200 && decoded is Map<String, dynamic>) {
         return decoded;
       } else {
-        final message = decoded is Map && decoded.containsKey('message')
-            ? decoded['message']
-            : decoded.toString(); // fallback for plain strings
+        final message =
+            decoded is Map && decoded.containsKey('message')
+                ? decoded['message']
+                : decoded.toString(); // fallback for plain strings
         return {'error': message};
       }
     } catch (e) {
@@ -82,9 +83,10 @@ class AuthService {
       if (res.statusCode == 201 || res.statusCode == 200) {
         return {'success': true};
       } else {
-        final message = decoded is Map && decoded.containsKey('message')
-            ? decoded['message']
-            : decoded.toString();
+        final message =
+            decoded is Map && decoded.containsKey('message')
+                ? decoded['message']
+                : decoded.toString();
         return {'success': false, 'error': message};
       }
     } catch (e) {
@@ -97,16 +99,27 @@ class AuthService {
     String code, {
     String role = 'user',
   }) async {
-    final res = await http.post(
-      Uri.parse(AppConfig.confirmUrl),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email, 'code': code, 'role': role}),
-    );
+    try {
+      final url = Uri.parse(AppConfig.confirmUrl);
+      final payload = {'email': email, 'code': code, 'role': role};
 
-    print('CONFIRM STATUS: ${res.statusCode}');
-    print('CONFIRM BODY: ${res.body}');
+      print('➡️ Calling CONFIRM URL: $url');
+      print('➡️ Payload: $payload');
 
-    return res.statusCode == 200;
+      final res = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(payload),
+      );
+
+      print('CONFIRM STATUS: ${res.statusCode}');
+      print('CONFIRM BODY: ${res.body}');
+
+      return res.statusCode == 200;
+    } catch (e) {
+      print('❌ Confirm signup failed: $e');
+      return false;
+    }
   }
 
   static Future<bool> updateAccount({
@@ -115,7 +128,8 @@ class AuthService {
     required String accessToken,
     required Map<String, dynamic> body,
   }) async {
-    final baseUrl = 'https://nl9w2g6wra.execute-api.us-east-1.amazonaws.com/production';
+    final baseUrl =
+        'https://nl9w2g6wra.execute-api.us-east-1.amazonaws.com/production';
     final url = Uri.parse('$baseUrl/AccountDetails/$id');
 
     final res = await http.patch(

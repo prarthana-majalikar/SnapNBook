@@ -3,10 +3,12 @@ import 'package:go_router/go_router.dart';
 import '../../services/auth_service.dart';
 
 class ConfirmSignupScreen extends StatefulWidget {
+  final String email;
   final String role;
 
   const ConfirmSignupScreen({
     super.key,
+    required this.email,
     required this.role,
   });
 
@@ -15,8 +17,15 @@ class ConfirmSignupScreen extends StatefulWidget {
 }
 
 class _ConfirmSignupScreenState extends State<ConfirmSignupScreen> {
-  final TextEditingController _emailController = TextEditingController();
+  late final TextEditingController _emailController;
   final TextEditingController _codeController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // ✅ Pre-fill email from widget
+    _emailController = TextEditingController(text: widget.email);
+  }
 
   void _confirmSignup() async {
     final email = _emailController.text.trim();
@@ -29,7 +38,9 @@ class _ConfirmSignupScreenState extends State<ConfirmSignupScreen> {
 
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Verification successful. You can now login.')),
+        const SnackBar(
+          content: Text('Verification successful. You can now login.'),
+        ),
       );
       context.go('/login');
     } else {

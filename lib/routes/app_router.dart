@@ -77,8 +77,10 @@ class AppRouter {
       GoRoute(
         path: '/confirm',
         builder: (context, state) {
+          final email = state.uri.queryParameters['email'] ?? '';
           final role = state.uri.queryParameters['role'] ?? 'user';
-          return ConfirmSignupScreen(role: role);
+
+          return ConfirmSignupScreen(email: email, role: role);
         },
       ),
 

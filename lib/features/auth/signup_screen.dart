@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../services/auth_service.dart';
+import '../../shared/constants/categories.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});
@@ -27,10 +28,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   bool _isLoading = false;
 
   final Map<String, List<String>> skillCategories = {
-    'Vehicles': ['bicycle', 'car', 'motorcycle', 'bus', 'truck', 'boat'],
-    'Furniture': ['chair', 'couch', 'bed', 'dining table', 'toilet'],
-    'Electronics': ['tv', 'laptop', 'cell phone'],
-    'Appliances': ['microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'clock', 'hair drier'],
+    for (var entry in categoryItems.entries)
+      categoryLabels[entry.key]!:
+          entry.value.map((item) => item.displayName).toList(),
   };
 
   void _signup() async {
@@ -61,13 +61,17 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     setState(() => _isLoading = false);
 
     if (result['success'] == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Signup successful')),
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Signup successful')));
+      context.go(
+        '/confirm?email=${_emailController.text.trim()}&role=$_selectedRole',
       );
-      context.go('/confirm?email=${_emailController.text.trim()}');
     } else {
       final message = result['error'] ?? 'Signup failed';
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
@@ -76,14 +80,20 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 16),
-        const Text('Skills', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        const Text(
+          'Skills',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 8),
         ...skillCategories.entries.map((entry) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 12),
-              Text(entry.key, style: const TextStyle(fontWeight: FontWeight.w600)),
+              Text(
+                entry.key,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
               ...entry.value.map((skill) {
                 final isSelected = _selectedSkills.contains(skill);
                 return CheckboxListTile(
@@ -127,13 +137,15 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               TextFormField(
                 controller: _firstNameController,
                 decoration: const InputDecoration(labelText: 'First Name'),
-                validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
+                validator:
+                    (v) => v == null || v.trim().isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 10),
               TextFormField(
                 controller: _lastNameController,
                 decoration: const InputDecoration(labelText: 'Last Name'),
-                validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
+                validator:
+                    (v) => v == null || v.trim().isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 10),
               TextFormField(
@@ -151,29 +163,38 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 controller: _passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'Password'),
-                validator: (v) => v != null && v.length >= 6 ? null : 'Min 6 characters',
+                validator:
+                    (v) =>
+                        v != null && v.length >= 6 ? null : 'Min 6 characters',
               ),
               const SizedBox(height: 10),
               TextFormField(
                 controller: _mobileController,
                 decoration: const InputDecoration(labelText: 'Mobile'),
                 keyboardType: TextInputType.phone,
-                validator: (v) =>
-                    v != null && RegExp(r'^\d{10}$').hasMatch(v.trim()) ? null : 'Enter 10-digit mobile number',
+                validator:
+                    (v) =>
+                        v != null && RegExp(r'^\d{10}$').hasMatch(v.trim())
+                            ? null
+                            : 'Enter 10-digit mobile number',
               ),
               const SizedBox(height: 10),
               TextFormField(
                 controller: _addressController,
                 decoration: const InputDecoration(labelText: 'Address'),
-                validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
+                validator:
+                    (v) => v == null || v.trim().isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 10),
               TextFormField(
                 controller: _pincodeController,
                 decoration: const InputDecoration(labelText: 'Pincode'),
                 keyboardType: TextInputType.number,
-                validator: (v) =>
-                    v != null && RegExp(r'^\d{5}$').hasMatch(v.trim()) ? null : 'Enter 5-digit pincode',
+                validator:
+                    (v) =>
+                        v != null && RegExp(r'^\d{5}$').hasMatch(v.trim())
+                            ? null
+                            : 'Enter 5-digit pincode',
               ),
               const SizedBox(height: 10),
               DropdownButtonFormField<String>(
@@ -181,7 +202,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 decoration: const InputDecoration(labelText: 'Role'),
                 items: const [
                   DropdownMenuItem(value: 'user', child: Text('User')),
-                  DropdownMenuItem(value: 'technician', child: Text('Technician')),
+                  DropdownMenuItem(
+                    value: 'technician',
+                    child: Text('Technician'),
+                  ),
                 ],
                 onChanged: (value) {
                   if (value != null) {
@@ -197,9 +221,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               _isLoading
                   ? const CircularProgressIndicator()
                   : ElevatedButton(
-                      onPressed: _signup,
-                      child: const Text('Sign Up'),
-                    ),
+                    onPressed: _signup,
+                    child: const Text('Sign Up'),
+                  ),
             ],
           ),
         ),
