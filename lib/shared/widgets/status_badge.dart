@@ -19,6 +19,8 @@ class StatusBadge extends StatelessWidget {
         return Colors.lightGreen;
       case 'NO_TECH_AVAILABLE':
         return Colors.black54;
+      case 'PAID':
+        return Colors.green;
       default:
         return Colors.grey;
     }

@@ -138,6 +138,8 @@ class _BookingListScreenState extends ConsumerState<BookingListScreen> {
                 statusLabel = 'NO_TECH_AVAILABLE';
               } else if (status == 'CANCELLED') {
                 statusLabel = 'CANCELLED';
+              } else if (status == 'paid') {
+                statusLabel = 'PAID';
               }
 
               return ListTile(

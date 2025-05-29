@@ -40,6 +40,7 @@ class BookingDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final status = booking['status'];
     final technicianId = booking['assignedTechId'];
+    final issue = booking['issue'] ?? '';
 
     return Scaffold(
       appBar: AppBar(title: const Text('Booking Details')),
@@ -67,11 +68,8 @@ class BookingDetailScreen extends StatelessWidget {
                 ),
                 _infoTile(Icons.tv, 'Appliance', booking['appliance']),
                 _infoTile(Icons.home, 'Address', booking['address']),
-                // _infoTile(
-                //   Icons.broken_image,
-                //   'Issue',
-                //   booking['issue']?.toString() ?? 'N/A',
-                // ),
+                if (issue.trim().isNotEmpty)
+                  _infoTile(Icons.broken_image, 'Issue', issue),
                 _infoTile(Icons.info_outline, 'Status', status),
 
                 // Only render if technicianId is valid
@@ -157,7 +155,7 @@ class BookingDetailScreen extends StatelessWidget {
                   ),
 
                 // Only render if technicianId is not assigned yet
-                if (status == 'ASSIGNED' && status == 'PENDING_ASSIGNMENT') ...[
+                if (status == 'ASSIGNED' || status == 'PENDING_ASSIGNMENT') ...[
                   const SizedBox(height: 24),
                   Center(
                     child: Padding(
