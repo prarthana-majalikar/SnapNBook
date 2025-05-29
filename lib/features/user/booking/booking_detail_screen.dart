@@ -67,6 +67,11 @@ class BookingDetailScreen extends StatelessWidget {
                 ),
                 _infoTile(Icons.tv, 'Appliance', booking['appliance']),
                 _infoTile(Icons.home, 'Address', booking['address']),
+                // _infoTile(
+                //   Icons.broken_image,
+                //   'Issue',
+                //   booking['issue']?.toString() ?? 'N/A',
+                // ),
                 _infoTile(Icons.info_outline, 'Status', status),
 
                 // Only render if technicianId is valid
@@ -113,46 +118,46 @@ class BookingDetailScreen extends StatelessWidget {
                           ),
 
                           const SizedBox(height: 20),
-                          Center(
-                            child: ElevatedButton.icon(
-                              onPressed:
-                                  () => context.push('/track/$technicianId'),
-                              icon: const Icon(Icons.location_on),
-                              label: const Text("Track Technician"),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.deepPurple.shade100,
-                                foregroundColor: Colors.black,
-                              ),
-                            ),
-                          ),
 
-                          if (status == 'COMPLETED')
+                          if (status == 'ACCEPTED')
                             Center(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 16),
-                                child: ElevatedButton.icon(
-                                  icon: const Icon(Icons.payment),
-                                  label: const Text("Pay Now"),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.green.shade600,
-                                    foregroundColor: Colors.white,
-                                  ),
-                                  onPressed: () {
-                                    final bookingId = booking['bookingId'];
-                                    final amount =
-                                        booking['bookingAmount'] ?? 100;
-                                    context.push('/payment/$bookingId/$amount');
-                                  },
+                              child: ElevatedButton.icon(
+                                onPressed:
+                                    () => context.push('/track/$technicianId'),
+                                icon: const Icon(Icons.location_on),
+                                label: const Text("Track Technician"),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.deepPurple.shade100,
+                                  foregroundColor: Colors.black,
                                 ),
                               ),
-                            ),
+                            )
+                          else if (status == 'COMPLETED')
+                            Center(
+                              child: ElevatedButton.icon(
+                                icon: const Icon(Icons.payment),
+                                label: const Text("Pay Now"),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green.shade600,
+                                  foregroundColor: Colors.white,
+                                ),
+                                onPressed: () {
+                                  final bookingId = booking['bookingId'];
+                                  final amount =
+                                      booking['bookingAmount'] ?? 100;
+                                  context.push('/payment/$bookingId/$amount');
+                                },
+                              ),
+                            )
+                          else
+                            const SizedBox.shrink(), // No button if status is PAID or anything else
                         ],
                       );
                     },
                   ),
 
                 // Only render if technicianId is not assigned yet
-                if (status != 'COMPLETED' && status != 'ACCEPTED') ...[
+                if (status == 'ASSIGNED' && status == 'PENDING_ASSIGNMENT') ...[
                   const SizedBox(height: 24),
                   Center(
                     child: Padding(

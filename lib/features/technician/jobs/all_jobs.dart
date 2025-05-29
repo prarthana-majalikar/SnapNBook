@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:snapnbook/config.dart';
 import 'package:intl/intl.dart';
+import 'package:snapnbook/services/job_service.dart';
+import 'package:snapnbook/services/location_service.dart';
 
 class TechnicianAllJobsScreen extends StatefulWidget {
   final String technicianId;
@@ -32,6 +34,30 @@ class _TechnicianAllJobsScreenState extends State<TechnicianAllJobsScreen> {
     'CANCELLED',
   ];
   final List<String> sortOptions = ['Newest First', 'Oldest First'];
+
+  Future<void> _acceptJob(String bookingId) async {
+    final success = await JobService.acceptBooking(
+      bookingId,
+      widget.technicianId,
+    );
+    if (success) {
+      TechnicianLocationService(
+        widget.technicianId,
+        bookingId,
+      ).startLocationUpdates();
+      fetchJobs();
+    }
+  }
+
+  Future<void> _declineJob(String bookingId) async {
+    final success = await JobService.declineBooking(
+      bookingId,
+      widget.technicianId,
+    );
+    if (success) {
+      fetchJobs();
+    }
+  }
 
   @override
   void initState() {
@@ -185,9 +211,8 @@ class _TechnicianAllJobsScreenState extends State<TechnicianAllJobsScreen> {
                                         if (job['status'] == 'ASSIGNED')
                                           ElevatedButton(
                                             onPressed:
-                                                () => updateStatus(
+                                                () => _acceptJob(
                                                   job['bookingId'],
-                                                  'ACCEPTED',
                                                 ),
                                             child: const Text('Accept'),
                                           ),
@@ -195,9 +220,8 @@ class _TechnicianAllJobsScreenState extends State<TechnicianAllJobsScreen> {
                                         if (job['status'] == 'ASSIGNED')
                                           OutlinedButton(
                                             onPressed:
-                                                () => updateStatus(
+                                                () => _declineJob(
                                                   job['bookingId'],
-                                                  'REJECTED',
                                                 ),
                                             child: const Text('Reject'),
                                           ),

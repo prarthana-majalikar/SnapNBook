@@ -8,7 +8,6 @@ import '../../../services/image_detection_service.dart';
 import 'package:go_router/go_router.dart';
 import "../../../shared/constants/categories.dart";
 
-
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
@@ -125,15 +124,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       showDialog(
                         context: context,
                         barrierDismissible: false,
-                        builder: (context) => const Center(
-                          child: CircularProgressIndicator(),
-                        ),
+                        builder:
+                            (context) => const Center(
+                              child: CircularProgressIndicator(),
+                            ),
                       );
 
                       try {
                         final result = await detectFirstObjectFromImage(
                           File(pickedFile.path),
                         );
+
+                        print('[DEBUG] Detected result: $result');
 
                         if (!context.mounted) return;
                         context.pop();
@@ -148,7 +150,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('Could not detect appliance or issue'),
+                              content: Text(
+                                'Could not detect appliance or issue',
+                              ),
                             ),
                           );
                         }

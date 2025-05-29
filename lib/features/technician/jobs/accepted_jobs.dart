@@ -22,10 +22,21 @@ class _AcceptedJobsScreenState extends State<AcceptedJobsScreen> {
     _fetchAcceptedJobs();
   }
 
+  bool _isToday(String isoDate) {
+    try {
+      final dt = DateTime.parse(isoDate);
+      final now = DateTime.now();
+      return dt.year == now.year && dt.month == now.month && dt.day == now.day;
+    } catch (_) {
+      return false;
+    }
+  }
+
   Future<void> _fetchAcceptedJobs() async {
     setState(() => _isLoading = true);
     try {
       final jobs = await JobService.fetchJobsForTechnician(widget.technicianId);
+
       setState(() {
         _incompleteJobs =
             jobs
@@ -43,7 +54,8 @@ class _AcceptedJobsScreenState extends State<AcceptedJobsScreen> {
                   (job) =>
                       job['status'] == 'ACCEPTED' &&
                       job['assignedTechId'] == widget.technicianId &&
-                      job['isCompleted'] == true,
+                      job['isCompleted'] == true &&
+                      _isToday(job['preferredTime'] ?? ''),
                 )
                 .toList();
 
