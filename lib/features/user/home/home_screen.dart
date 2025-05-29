@@ -109,72 +109,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
                     onPressed: () async {
-                      final picker = ImagePicker();
-                      final pickedFile = await picker.pickImage(
-                        source: ImageSource.camera,
-                      );
-
-                      if (pickedFile == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('No image selected')),
-                        );
-                        return;
-                      }
-
-                      showDialog(
+                      showModalBottomSheet(
                         context: context,
-                        barrierDismissible: false,
-                        builder:
-                            (context) => const Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                      );
-
-                      try {
-                        final result = await detectFirstObjectFromImage(
-                          File(pickedFile.path),
-                        );
-
-                        if (!context.mounted) return;
-                        context.pop();
-
-                        final appliance = result?['appliance'];
-                        final issue = result?['issue'];
-
-                        if (appliance == 'No serviceable objects found' ||
-                            (appliance == null || appliance.trim().isEmpty)) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'No recognizable appliance found in the image. Please try again with a clearer picture.',
-                              ),
-                              duration: Duration(seconds: 3),
-                            ),
-                          );
-                          return;
-                        }
-
-                        if (appliance != null && issue != null) {
-                          context.push(
-                            '/appliance-selection?appliance=${Uri.encodeComponent(appliance)}&issue=${Uri.encodeComponent(issue)}',
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                'Could not detect appliance or issue',
-                              ),
-                            ),
-                          );
-                        }
-                      } catch (e) {
-                        print('Error: $e');
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Failed to detect appliance'),
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(16),
                           ),
-                        );
-                      }
+                        ),
+                        builder: (BuildContext context) {
+                          return SafeArea(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ListTile(
+                                  leading: const Icon(Icons.camera_alt),
+                                  title: const Text('Take a Picture'),
+                                  onTap: () {
+                                    Navigator.of(context).pop();
+                                    _pickImage(ImageSource.camera);
+                                  },
+                                ),
+                                ListTile(
+                                  leading: const Icon(Icons.photo_library),
+                                  title: const Text('Upload from Gallery'),
+                                  onTap: () {
+                                    Navigator.of(context).pop();
+                                    _pickImage(ImageSource.gallery);
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
                     },
                   ),
                 ),
@@ -264,6 +231,62 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _pickImage(ImageSource source) async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: source);
+
+    if (pickedFile == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('No image selected')));
+      return;
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final result = await detectFirstObjectFromImage(File(pickedFile.path));
+
+      if (!context.mounted) return;
+      context.pop(); // Close the progress dialog
+
+      final appliance = result?['appliance'];
+      final issue = result?['issue'];
+
+      if (appliance == 'No serviceable objects found' ||
+          (appliance == null || appliance.trim().isEmpty)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'No recognizable appliance found in the image. Please try again with a clearer picture.',
+            ),
+            duration: Duration(seconds: 3),
+          ),
+        );
+        return;
+      }
+
+      if (appliance != null && issue != null) {
+        context.push(
+          '/appliance-selection?appliance=${Uri.encodeComponent(appliance)}&issue=${Uri.encodeComponent(issue)}',
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not detect appliance or issue')),
+        );
+      }
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Failed to detect appliance')),
+      );
+    }
   }
 }
 
