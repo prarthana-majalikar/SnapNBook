@@ -135,13 +135,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           File(pickedFile.path),
                         );
 
-                        print('[DEBUG] Detected result: $result');
-
                         if (!context.mounted) return;
                         context.pop();
 
                         final appliance = result?['appliance'];
                         final issue = result?['issue'];
+
+                        if (appliance == 'No serviceable objects found' ||
+                            (appliance == null || appliance.trim().isEmpty)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'No recognizable appliance found in the image. Please try again with a clearer picture.',
+                              ),
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
+                          return;
+                        }
 
                         if (appliance != null && issue != null) {
                           context.push(
