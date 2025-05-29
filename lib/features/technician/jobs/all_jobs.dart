@@ -32,6 +32,7 @@ class _TechnicianAllJobsScreenState extends State<TechnicianAllJobsScreen> {
     'REJECTED',
     'COMPLETED',
     'CANCELLED',
+    'PAID',
   ];
   final List<String> sortOptions = ['Newest First', 'Oldest First'];
 
